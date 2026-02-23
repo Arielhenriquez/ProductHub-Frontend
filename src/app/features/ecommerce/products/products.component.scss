@@ -1,0 +1,57 @@
+.ecommerce-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.ecommerce-main {
+  flex: 1;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.products-header {
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 2rem 0;
+
+  &__title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0;
+    @media (min-width: 768px) {
+      font-size: 2.25rem;
+    }
+  }
+
+  &__subtitle {
+    margin: 0.5rem 0 0;
+    color: #6b7280;
+  }
+}
+
+.products-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  @media (min-width: 1024px) {
+    flex-direction: row;
+  }
+}
+
+.products-sidebar {
+  width: 100%;
+  @media (min-width: 1024px) {
+    width: 16rem;
+    flex-shrink: 0;
+  }
+}
+
+.products-grid-wrap {
+  flex: 1;
+}

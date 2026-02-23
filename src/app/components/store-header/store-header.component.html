@@ -1,0 +1,29 @@
+<header class="store-header">
+  <div class="store-header__container">
+    <a routerLink="/" class="store-header__logo" aria-label="ShopHub Inicio">
+      <span class="store-header__logo-icon">S</span>
+      <span class="store-header__brand">ShopHub</span>
+    </a>
+
+    <div class="store-header__search">
+      <span class="store-header__search-icon" aria-hidden="true">🔍</span>
+      <input type="text" placeholder="Buscar productos..." class="store-header__input" />
+    </div>
+
+    <div class="store-header__actions">
+      @if (isLoggedIn) {
+        <div class="store-header__menu">
+          <button type="button" class="store-header__btn store-header__btn--icon" aria-label="Mi cuenta">👤</button>
+          <div class="store-header__dropdown">
+            <a routerLink="/account" class="store-header__dropdown-item">Mi Cuenta</a>
+            <button type="button" class="store-header__dropdown-item">Cerrar Sesión</button>
+          </div>
+        </div>
+      } @else {
+        <a routerLink="/login" class="store-header__link store-header__link--ghost">Iniciar Sesión</a>
+        <a routerLink="/register"><button type="button" class="store-header__btn store-header__btn--primary">Registrarse</button></a>
+      }
+      <button type="button" class="store-header__btn store-header__btn--icon store-header__mobile-menu" aria-label="Menú">☰</button>
+    </div>
+  </div>
+</header>

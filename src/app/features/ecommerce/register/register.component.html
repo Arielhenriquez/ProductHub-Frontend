@@ -1,0 +1,61 @@
+<div class="register-page">
+  <div class="register-page__inner">
+    <div class="register-page__header">
+      <a routerLink="/" class="register-page__logo">
+        <span class="register-page__logo-icon">🛒</span>
+        <span class="register-page__brand">ShopHub</span>
+      </a>
+      <h1 class="register-page__title">Crear cuenta</h1>
+      <p class="register-page__subtitle">Únete y empieza a explorar productos increíbles</p>
+    </div>
+
+    <div class="register-card">
+      <div class="register-card__header">
+        <h2 class="register-card__title">Registro</h2>
+        <p class="register-card__subtitle">Ingresa tus datos para crear una cuenta</p>
+      </div>
+      <div class="register-card__body">
+        <form (ngSubmit)="handleSubmit()" class="register-form">
+          <div class="register-form__group">
+            <label for="name">Nombre completo</label>
+            <input id="name" type="text" placeholder="Juan Pérez" required [(ngModel)]="formData.name" name="name" />
+          </div>
+          <div class="register-form__group">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="tu@ejemplo.com" required [(ngModel)]="formData.email" name="email" />
+          </div>
+          <div class="register-form__group">
+            <label for="password">Contraseña</label>
+            <div class="register-form__input-wrap">
+              <input id="password" [type]="showPassword ? 'text' : 'password'" placeholder="Crea una contraseña segura" required minlength="8" [(ngModel)]="formData.password" name="password" />
+              <button type="button" class="register-form__toggle" (click)="showPassword = !showPassword" aria-label="Ver contraseña">{{ showPassword ? '🙈' : '👁' }}</button>
+            </div>
+          </div>
+          <div class="register-form__group">
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <div class="register-form__input-wrap">
+              <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Confirma tu contraseña" required minlength="8" [(ngModel)]="formData.confirmPassword" name="confirmPassword" />
+              <button type="button" class="register-form__toggle" (click)="showConfirmPassword = !showConfirmPassword" aria-label="Ver contraseña">{{ showConfirmPassword ? '🙈' : '👁' }}</button>
+            </div>
+          </div>
+          <label class="register-form__checkbox">
+            <input type="checkbox" [(ngModel)]="formData.acceptTerms" name="acceptTerms" />
+            <span>Acepto los <a routerLink="/terms">Términos de Servicio</a> y la <a routerLink="/privacy">Política de Privacidad</a></span>
+          </label>
+          <button type="submit" class="register-form__submit" [disabled]="isLoading">
+            {{ isLoading ? 'Creando cuenta...' : 'Crear cuenta' }}
+          </button>
+        </form>
+
+        <div class="register-card__divider">
+          <span>¿Ya tienes cuenta?</span>
+        </div>
+        <a routerLink="/login" class="register-form__link-btn">Iniciar sesión</a>
+      </div>
+    </div>
+
+    <p class="register-page__footer">
+      <a routerLink="/">Volver a la tienda</a>
+    </p>
+  </div>
+</div>

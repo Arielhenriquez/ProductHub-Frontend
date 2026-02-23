@@ -1,0 +1,39 @@
+<div class="product-filters">
+  <div class="product-filters__header">
+    <h3 class="product-filters__title">Filters</h3>
+    <button type="button" class="product-filters__clear" (click)="clearFilters()">Clear all</button>
+  </div>
+  <div class="product-filters__body">
+    <div class="product-filters__group">
+      <h4 class="product-filters__label">Categories</h4>
+      @for (category of categories; track category.Id) {
+        <label class="product-filters__checkbox">
+          <input type="checkbox" [checked]="isCategorySelected(category.Id)" (change)="toggleCategory(category.Id)" />
+          <span>{{ category.Name }}</span>
+        </label>
+      }
+    </div>
+    <div class="product-filters__group">
+      <h4 class="product-filters__label">Price Range</h4>
+      <div class="product-filters__range">
+        <input type="range" min="0" max="1000" step="10" [(ngModel)]="priceMax" />
+        <div class="product-filters__range-labels">
+          <span>$0</span>
+          <span>${{ priceMax }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="product-filters__group">
+      <h4 class="product-filters__label">Availability</h4>
+      <label class="product-filters__checkbox">
+        <input type="checkbox" checked />
+        <span>Active Products</span>
+      </label>
+      <label class="product-filters__checkbox">
+        <input type="checkbox" />
+        <span>Price Negotiable</span>
+      </label>
+    </div>
+    <button type="button" class="product-filters__apply">Apply Filters</button>
+  </div>
+</div>

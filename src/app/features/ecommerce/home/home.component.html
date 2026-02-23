@@ -1,0 +1,91 @@
+<div class="ecommerce-layout">
+  <app-store-header></app-store-header>
+
+  <main class="ecommerce-main">
+    <section class="hero">
+      <div class="hero__inner">
+        <h1 class="hero__title">Descubre Tus Productos Perfectos</h1>
+        <p class="hero__subtitle">Explora miles de productos premium. Contacta directamente con nosotros para coordinar tu compra.</p>
+        <div class="hero__actions">
+          <a routerLink="/products" class="btn btn--primary btn--lg">Ver Productos →</a>
+          <a routerLink="/products" [queryParams]="{featured: true}" class="btn btn--outline btn--lg">Productos Destacados</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="container">
+        <div class="features__grid">
+          <div class="feature-card">
+            <div class="feature-card__icon">📞</div>
+            <h3 class="feature-card__title">Contacto Directo</h3>
+            <p class="feature-card__text">Chatea con nosotros por WhatsApp</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">🏢</div>
+            <h3 class="feature-card__title">Pago Bancario</h3>
+            <p class="feature-card__text">Transferencias seguras</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon">✓</div>
+            <h3 class="feature-card__title">Productos Verificados</h3>
+            <p class="feature-card__text">Calidad garantizada</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="categories">
+      <div class="container">
+        <div class="categories__header">
+          <h2 class="categories__title">Compra por Categoría</h2>
+          <p class="categories__subtitle">Explora nuestras colecciones</p>
+        </div>
+        <div class="categories__grid">
+          <a [routerLink]="['/products']" [queryParams]="{category: 'electronics'}" class="category-card">
+            <div class="category-card__image category-card__image--blue">
+              <img src="/assets/images/modern-electronics.png" alt="Electrónica" />
+            </div>
+            <div class="category-card__body">
+              <h3>Electrónica</h3>
+              <p>Últimas tecnologías y gadgets</p>
+              <span class="category-card__link">Explorar →</span>
+            </div>
+          </a>
+          <a [routerLink]="['/products']" [queryParams]="{category: 'fashion'}" class="category-card">
+            <div class="category-card__image category-card__image--pink">
+              <img src="/assets/images/fashion-clothing-accessories.png" alt="Moda" />
+            </div>
+            <div class="category-card__body">
+              <h3>Moda</h3>
+              <p>Estilos modernos para todos</p>
+              <span class="category-card__link">Explorar →</span>
+            </div>
+          </a>
+          <a [routerLink]="['/products']" [queryParams]="{category: 'home'}" class="category-card">
+            <div class="category-card__image category-card__image--green">
+              <img src="/assets/images/home-garden-decor.jpg" alt="Hogar y Jardín" />
+            </div>
+            <div class="category-card__body">
+              <h3>Hogar y Jardín</h3>
+              <p>Transforma tu espacio</p>
+              <span class="category-card__link">Explorar →</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta__card">
+          <h2 class="cta__title">Comienza a Comprar Hoy</h2>
+          <p class="cta__text">Únete a miles de clientes satisfechos y encuentra tus productos perfectos</p>
+          <a routerLink="/products" class="btn btn--secondary btn--lg">Ver Todos los Productos →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <app-store-footer></app-store-footer>
+</div>
