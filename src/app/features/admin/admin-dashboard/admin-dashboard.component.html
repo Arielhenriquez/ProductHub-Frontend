@@ -1,0 +1,102 @@
+<div class="admin-dashboard">
+  <div class="admin-dashboard__intro">
+    <h1 class="admin-dashboard__title">Panel Principal</h1>
+    <p class="admin-dashboard__subtitle">Administra tus productos y categorías desde aquí.</p>
+  </div>
+
+  @if (loading) {
+    <p class="admin-dashboard__loading">Cargando…</p>
+  } @else {
+    <div class="admin-dashboard__stats">
+      @for (stat of stats; track stat.title) {
+        <div class="admin-card">
+          <div class="admin-card__head">
+            <span class="admin-card__label">{{ stat.title }}</span>
+            <span class="admin-card__icon">{{ stat.icon }}</span>
+          </div>
+          <div class="admin-card__body">
+            <div class="admin-card__value">{{ stat.value }}</div>
+            <p class="admin-card__meta">{{ stat.change }}</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="admin-dashboard__actions">
+      <div class="admin-card admin-card--action">
+        <div class="admin-card__content admin-card__content--between">
+          <div class="admin-card__action-inner">
+            <span class="admin-card__action-icon">📦</span>
+            <div>
+              <h3 class="admin-card__action-title">Gestionar Productos</h3>
+              <p class="admin-card__action-desc">Crear, editar y eliminar productos</p>
+            </div>
+          </div>
+          <a routerLink="/admin/products" class="admin-btn admin-btn--outline">Ir →</a>
+        </div>
+      </div>
+      <div class="admin-card admin-card--action">
+        <div class="admin-card__content admin-card__content--between">
+          <div class="admin-card__action-inner">
+            <span class="admin-card__action-icon">📁</span>
+            <div>
+              <h3 class="admin-card__action-title">Gestionar Categorías</h3>
+              <p class="admin-card__action-desc">Crear, editar y eliminar categorías</p>
+            </div>
+          </div>
+          <a routerLink="/admin/categories" class="admin-btn admin-btn--outline">Ir →</a>
+        </div>
+      </div>
+      <div class="admin-card admin-card--action">
+        <div class="admin-card__content admin-card__content--between">
+          <div class="admin-card__action-inner">
+            <span class="admin-card__action-icon">👥</span>
+            <div>
+              <h3 class="admin-card__action-title">Gestionar Usuarios</h3>
+              <p class="admin-card__action-desc">Ver usuarios registrados</p>
+            </div>
+          </div>
+          <a routerLink="/admin/users" class="admin-btn admin-btn--outline">Ir →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card__head admin-card__head--row">
+        <h2 class="admin-card__title">Productos Recientes</h2>
+        <a routerLink="/admin/products" class="admin-card__link">Ver todos →</a>
+      </div>
+      <div class="admin-card__body admin-card__body--table">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of recentProducts; track product.id) {
+              <tr>
+                <td class="admin-table__name">{{ product.name }}</td>
+                <td class="admin-table__muted">{{ categoryName(product) }}</td>
+                <td class="admin-table__name">{{ formatPrice(product.price) }}</td>
+                <td>
+                  <span class="admin-badge" [class.admin-badge--success]="product.isActive">
+                    {{ product.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+              </tr>
+            }
+            @if (recentProducts.length === 0) {
+              <tr>
+                <td colspan="4" class="admin-table__empty">No hay productos recientes</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
