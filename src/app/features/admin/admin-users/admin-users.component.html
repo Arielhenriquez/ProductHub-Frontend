@@ -1,0 +1,115 @@
+<div class="admin-page">
+  <div>
+    <h1 class="admin-page__title">Usuarios</h1>
+    <p class="admin-page__subtitle">Visualiza y gestiona los usuarios registrados</p>
+  </div>
+
+  <div class="admin-dashboard__stats" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="admin-card">
+      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
+        <span class="admin-card__action-icon">🛡</span>
+        <div>
+          <p class="admin-card__value" style="margin: 0;">{{ totalAdmins }}</p>
+          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Administradores</p>
+        </div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
+        <span class="admin-card__action-icon" style="background: #dbeafe;">👤</span>
+        <div>
+          <p class="admin-card__value" style="margin: 0;">{{ totalUsers }}</p>
+          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Usuarios normales</p>
+        </div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
+        <span class="admin-card__action-icon" style="background: #d1fae5;">✓</span>
+        <div>
+          <p class="admin-card__value" style="margin: 0;">{{ totalActive }}</p>
+          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Activos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card admin-card--filters">
+    <div class="admin-filters">
+      <div class="admin-filters__search">
+        <span class="admin-filters__icon">🔍</span>
+        <input type="text" placeholder="Buscar por nombre o email..." [(ngModel)]="searchQuery" class="admin-filters__input" />
+      </div>
+      <select class="admin-filters__select" [(ngModel)]="filterRole">
+        <option value="all">Todos los roles</option>
+        <option value="admin">Administradores</option>
+        <option value="user">Usuarios</option>
+      </select>
+      <select class="admin-filters__select" [(ngModel)]="filterStatus">
+        <option value="all">Todos</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__head">
+      <h2 class="admin-card__title">{{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'usuario' : 'usuarios' }}</h2>
+    </div>
+    <div class="admin-card__body admin-card__body--table">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Registrado</th>
+            <th class="admin-table__actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filteredUsers; track user.id) {
+            <tr>
+              <td class="admin-table__muted">{{ user.id }}</td>
+              <td>
+                <div class="admin-table__product">
+                  <span class="admin-users__avatar">{{ initials(user.name) }}</span>
+                  <span class="admin-table__name">{{ user.name }}</span>
+                </div>
+              </td>
+              <td class="admin-table__muted">{{ user.email }}</td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--success]="user.role === 'admin'">
+                  {{ user.role === 'admin' ? '🛡 Admin' : 'Usuario' }}
+                </span>
+              </td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--success]="user.isActive">
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="admin-table__muted">{{ user.createdAt | date:'d MMM y' }}</td>
+              <td class="admin-table__actions">
+                @if (user.role !== 'admin') {
+                  <button type="button" class="admin-btn admin-btn--outline" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" (click)="toggleStatus(user)">
+                    {{ user.isActive ? 'Desactivar' : 'Activar' }}
+                  </button>
+                } @else {
+                  <span class="admin-table__muted" style="font-size: 0.75rem;">Protegido</span>
+                }
+              </td>
+            </tr>
+          }
+          @if (filteredUsers.length === 0) {
+            <tr>
+              <td colspan="7" class="admin-table__empty">No se encontraron usuarios</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

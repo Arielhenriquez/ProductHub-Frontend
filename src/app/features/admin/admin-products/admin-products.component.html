@@ -1,0 +1,156 @@
+<div class="admin-page">
+  <div class="admin-page__head">
+    <div>
+      <h1 class="admin-page__title">Productos</h1>
+      <p class="admin-page__subtitle">Gestiona tu inventario de productos</p>
+    </div>
+    <button type="button" class="admin-btn admin-btn--primary" (click)="openCreate()">+ Agregar Producto</button>
+  </div>
+
+  <div class="admin-card admin-card--filters">
+    <div class="admin-filters">
+      <div class="admin-filters__search">
+        <span class="admin-filters__icon">🔍</span>
+        <input
+          type="text"
+          class="admin-filters__input"
+          placeholder="Buscar productos..."
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+      <select class="admin-filters__select" [(ngModel)]="filterCategory">
+        <option value="all">Todas las categorías</option>
+        @for (cat of categories; track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
+      <select class="admin-filters__select" [(ngModel)]="filterStatus">
+        <option value="all">Todos</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__head">
+      <h2 class="admin-card__title">{{ filteredProducts.length }} {{ filteredProducts.length === 1 ? 'producto' : 'productos' }}</h2>
+    </div>
+    <div class="admin-card__body admin-card__body--table">
+      @if (loading) {
+        <p class="admin-table__empty">Cargando…</p>
+      } @else if (error) {
+        <p class="admin-table__empty admin-table__empty--error">{{ error }}</p>
+      } @else {
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Estado</th>
+              <th>Creado</th>
+              <th class="admin-table__actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredProducts.length === 0) {
+              <tr>
+                <td colspan="7" class="admin-table__empty">No se encontraron productos</td>
+              </tr>
+            } @else {
+              @for (product of filteredProducts; track product.id) {
+                <tr>
+                  <td class="admin-table__muted">{{ product.id.slice(0, 8) }}…</td>
+                  <td>
+                    <div class="admin-table__product">
+                      <img
+                        [src]="imageUrl(product)"
+                        [alt]="product.name"
+                        class="admin-table__thumb"
+                        (error)="onImageError($event)"
+                      />
+                      <div>
+                        <div class="admin-table__name">{{ product.name }}</div>
+                        @if (product.description) {
+                          <div class="admin-table__desc">{{ product.description }}</div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="admin-badge admin-badge--outline">{{ categoryName(product) }}</span></td>
+                  <td class="admin-table__name">{{ formatPrice(product.price) }}</td>
+                  <td>
+                    <span class="admin-badge" [class.admin-badge--success]="product.isActive">
+                      {{ product.isActive ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+                  <td class="admin-table__muted">—</td>
+                  <td class="admin-table__actions">
+                    <button type="button" class="admin-btn admin-btn--icon" (click)="openEdit(product)" title="Editar">✎</button>
+                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteProduct(product)" title="Eliminar">🗑</button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+
+  @if (dialogOpen) {
+    <div class="admin-dialog-backdrop" (click)="closeDialog()">
+      <div class="admin-dialog" (click)="$event.stopPropagation()">
+        <div class="admin-dialog__head">
+          <h3 class="admin-dialog__title">{{ editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto' }}</h3>
+          <p class="admin-dialog__desc">
+            {{ editingProduct ? 'Modifica los datos y guarda.' : 'Completa los datos del producto.' }}
+          </p>
+        </div>
+        <form (ngSubmit)="submit()" class="admin-dialog__form">
+          <div class="admin-form-group">
+            <label for="product-name">Nombre del producto *</label>
+            <input id="product-name" type="text" [(ngModel)]="form.name" name="name" required maxlength="200" placeholder="Ej: Audífonos Bluetooth" class="admin-input" />
+          </div>
+          <div class="admin-form-group">
+            <label for="product-desc">Descripción</label>
+            <textarea id="product-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Descripción (opcional)" class="admin-input admin-input--textarea"></textarea>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label for="product-price">Precio (USD)</label>
+              <input id="product-price" type="number" [(ngModel)]="form.price" name="price" step="0.01" min="0" placeholder="0.00" class="admin-input" />
+              <span class="admin-form-hint">Dejar vacío si es a negociar</span>
+            </div>
+            <div class="admin-form-group">
+              <label for="product-cat">Categoría *</label>
+              <select id="product-cat" [(ngModel)]="form.categoryId" name="categoryId" required class="admin-input">
+                <option value="">Seleccionar categoría</option>
+                @for (cat of categories; track cat.id) {
+                  <option [value]="cat.id">{{ cat.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label for="product-stock">Cantidad en stock</label>
+            <input id="product-stock" type="number" [(ngModel)]="form.quantityInStock" name="quantityInStock" min="0" class="admin-input" />
+          </div>
+          <div class="admin-form-switch">
+            <div>
+              <label for="product-active">Estado activo</label>
+              <p class="admin-form-hint">Solo los productos activos son visibles para clientes</p>
+            </div>
+            <input id="product-active" type="checkbox" [(ngModel)]="form.isActive" name="isActive" class="admin-checkbox" />
+          </div>
+          <div class="admin-dialog__actions">
+            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
+            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">{{ editingProduct ? 'Guardar Cambios' : 'Agregar Producto' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

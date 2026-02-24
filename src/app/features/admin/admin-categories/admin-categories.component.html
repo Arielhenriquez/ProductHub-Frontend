@@ -1,0 +1,125 @@
+<div class="admin-page">
+  <div class="admin-page__head">
+    <div>
+      <h1 class="admin-page__title">Categorías</h1>
+      <p class="admin-page__subtitle">Gestiona las categorías de productos</p>
+    </div>
+    <button type="button" class="admin-btn admin-btn--primary" (click)="openCreate()">+ Agregar Categoría</button>
+  </div>
+
+  <div class="admin-dashboard__stats" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="admin-card">
+      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
+        <span class="admin-card__action-icon">📁</span>
+        <div>
+          <p class="admin-card__value" style="margin: 0;">{{ categories.length }}</p>
+          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Total categorías</p>
+        </div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
+        <span class="admin-card__action-icon" style="background: #d1fae5;">📁</span>
+        <div>
+          <p class="admin-card__value" style="margin: 0;">{{ activeCount }}</p>
+          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Activas</p>
+        </div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
+        <span class="admin-card__action-icon" style="background: #f3f4f6;">📁</span>
+        <div>
+          <p class="admin-card__value" style="margin: 0;">{{ categories.length - activeCount }}</p>
+          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Inactivas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-filters__search" style="max-width: 24rem;">
+    <span class="admin-filters__icon">🔍</span>
+    <input type="text" placeholder="Buscar categorías..." [(ngModel)]="searchQuery" class="admin-filters__input" />
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card__head">
+      <h2 class="admin-card__title">{{ filteredCategories.length }} {{ filteredCategories.length === 1 ? 'categoría' : 'categorías' }}</h2>
+    </div>
+    <div class="admin-card__body admin-card__body--table">
+      @if (loading) {
+        <p class="admin-table__empty">Cargando…</p>
+      } @else if (error) {
+        <p class="admin-table__empty admin-table__empty--error">{{ error }}</p>
+      } @else {
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Creado</th>
+              <th class="admin-table__actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredCategories.length === 0) {
+              <tr>
+                <td colspan="6" class="admin-table__empty">No se encontraron categorías</td>
+              </tr>
+            } @else {
+              @for (cat of filteredCategories; track cat.id) {
+                <tr>
+                  <td class="admin-table__muted">{{ cat.id.slice(0, 8) }}…</td>
+                  <td>
+                    <div class="admin-table__product">
+                      <span class="admin-card__action-icon" style="width: 2rem; height: 2rem; font-size: 0.875rem;">📁</span>
+                      <span class="admin-table__name">{{ cat.name }}</span>
+                    </div>
+                  </td>
+                  <td class="admin-table__muted" style="max-width: 16rem;">{{ cat.description || 'Sin descripción' }}</td>
+                  <td>
+                    <span class="admin-badge" [class.admin-badge--success]="cat.isActive !== false">
+                      {{ cat.isActive !== false ? 'Activa' : 'Inactiva' }}
+                    </span>
+                  </td>
+                  <td class="admin-table__muted">—</td>
+                  <td class="admin-table__actions">
+                    <button type="button" class="admin-btn admin-btn--icon" (click)="openEdit(cat)" title="Editar">✎</button>
+                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteCategory(cat)" title="Eliminar">🗑</button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+
+  @if (dialogOpen) {
+    <div class="admin-dialog-backdrop" (click)="closeDialog()">
+      <div class="admin-dialog" style="max-width: 28rem;" (click)="$event.stopPropagation()">
+        <div class="admin-dialog__head">
+          <h3 class="admin-dialog__title">{{ editingCategory ? 'Editar Categoría' : 'Agregar Nueva Categoría' }}</h3>
+          <p class="admin-dialog__desc">{{ editingCategory ? 'Modifica los datos y guarda.' : 'Completa los datos.' }}</p>
+        </div>
+        <form (ngSubmit)="submit()" class="admin-dialog__form">
+          <div class="admin-form-group">
+            <label for="cat-name">Nombre *</label>
+            <input id="cat-name" type="text" [(ngModel)]="form.name" name="name" required placeholder="Ej: Electrónica" class="admin-input" />
+          </div>
+          <div class="admin-form-group">
+            <label for="cat-desc">Descripción</label>
+            <textarea id="cat-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Breve descripción" class="admin-input admin-input--textarea"></textarea>
+          </div>
+          <div class="admin-dialog__actions">
+            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
+            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">{{ editingCategory ? 'Guardar Cambios' : 'Crear Categoría' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
