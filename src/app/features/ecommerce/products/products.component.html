@@ -11,10 +11,28 @@
 
     <div class="container products-content">
       <aside class="products-sidebar">
-        <app-product-filters></app-product-filters>
+        <app-product-filters
+          [categories]="categories"
+          [search]="search"
+          [selectedCategoryIds]="selectedCategoryIds"
+          (searchChange)="onSearchChange($event)"
+          (categoriesChange)="onCategoriesChange($event)"
+        />
       </aside>
       <div class="products-grid-wrap">
-        <app-product-grid></app-product-grid>
+        @if (loading) {
+          <p class="products-loading">Cargando productos…</p>
+        } @else if (error) {
+          <p class="products-error">{{ error }}</p>
+        } @else {
+          <app-product-grid
+            [products]="products"
+            [totalCount]="totalCount"
+            [pageNumber]="pageNumber"
+            [pageSize]="pageSize"
+            (pageChange)="onPageChange($event)"
+          />
+        }
       </div>
     </div>
   </main>

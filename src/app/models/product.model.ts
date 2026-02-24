@@ -1,3 +1,8 @@
+/**
+ * Legacy domain models (PascalCase, numeric ids).
+ * For ProductHub API DTOs and request/response types, use `app/types` or `app/core`.
+ */
+
 // Categories table
 export interface Category {
   Id: number;

@@ -1,38 +1,63 @@
 <div class="product-grid">
   <div class="product-grid__toolbar">
-    <p class="product-grid__count">Showing <strong>{{ activeProducts.length }}</strong> products</p>
-    <select class="product-grid__sort" [(ngModel)]="sortValue">
-      <option value="featured">Featured</option>
-      <option value="price-low">Price: Low to High</option>
-      <option value="price-high">Price: High to Low</option>
-      <option value="newest">Newest</option>
-    </select>
+    <p class="product-grid__count">
+      Mostrando <strong>{{ list.length }}</strong> de <strong>{{ total }}</strong> productos
+    </p>
+    @if (totalPages > 1) {
+      <div class="product-grid__pagination">
+        <button
+          type="button"
+          class="product-grid__page-btn"
+          [disabled]="page <= 1"
+          (click)="goToPage(page - 1)"
+        >
+          Anterior
+        </button>
+        <span class="product-grid__page-info">Página {{ page }} de {{ totalPages }}</span>
+        <button
+          type="button"
+          class="product-grid__page-btn"
+          [disabled]="page >= totalPages"
+          (click)="goToPage(page + 1)"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
   </div>
 
   <div class="product-grid__list">
-    @for (product of activeProducts; track product.Id) {
+    @for (product of list; track product.id) {
       <article class="product-card">
         <div class="product-card__image-wrap">
-          <a [routerLink]="['/products', product.Id]">
-            <img [src]="product.ImageUrl || '/assets/images/placeholder.svg'" [alt]="product.Name" class="product-card__image" />
+          <a [routerLink]="['/products', product.id]">
+            <img
+              [src]="imageUrl(product)"
+              [alt]="product.name"
+              class="product-card__image"
+              (error)="onImageError($event)"
+            />
           </a>
-          <button type="button" class="product-card__fav" (click)="toggleFavorite(product.Id)" [class.is-fav]="isFavorite(product.Id)" aria-label="Favorito">
-            {{ isFavorite(product.Id) ? '❤️' : '🤍' }}
-          </button>
-          @if (product.Price === null) {
-            <span class="product-card__badge">Negotiable</span>
+          @if (product.price === null || product.price === undefined) {
+            <span class="product-card__badge">A negociar</span>
           }
         </div>
         <div class="product-card__body">
-          <span class="product-card__category">{{ getCategoryName(product.CategoryId) }}</span>
-          <a [routerLink]="['/products', product.Id]" class="product-card__title">{{ product.Name }}</a>
-          @if (product.Description) {
-            <p class="product-card__desc">{{ product.Description }}</p>
+          @if (categoryName(product)) {
+            <span class="product-card__category">{{ categoryName(product) }}</span>
           }
-          <p class="product-card__price">{{ formatPrice(product.Price) }}</p>
-          <a [routerLink]="['/products', product.Id]" class="product-card__btn">View Details</a>
+          <a [routerLink]="['/products', product.id]" class="product-card__title">{{ product.name }}</a>
+          @if (product.description) {
+            <p class="product-card__desc">{{ product.description }}</p>
+          }
+          <p class="product-card__price">{{ formatPrice(product.price) }}</p>
+          <a [routerLink]="['/products', product.id]" class="product-card__btn">Ver detalle</a>
         </div>
       </article>
     }
   </div>
+
+  @if (list.length === 0) {
+    <p class="product-grid__empty">No hay productos que coincidan con los filtros.</p>
+  }
 </div>

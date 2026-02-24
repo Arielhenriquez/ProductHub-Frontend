@@ -7,8 +7,17 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './store-header.component.html',
-  styleUrl: './store-header.component.scss'
+  styleUrl: './store-header.component.scss',
 })
 export class StoreHeaderComponent {
   isLoggedIn = false;
+  mobileOpen = false;
+
+  toggleMobile(): void {
+    this.mobileOpen = !this.mobileOpen;
+  }
+
+  closeMobile(): void {
+    this.mobileOpen = false;
+  }
 }

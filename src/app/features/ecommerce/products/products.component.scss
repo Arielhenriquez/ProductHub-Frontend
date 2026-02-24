@@ -55,3 +55,14 @@
 .products-grid-wrap {
   flex: 1;
 }
+
+.products-loading,
+.products-error {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.products-error {
+  color: #dc2626;
+}

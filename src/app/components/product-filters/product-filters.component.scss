@@ -37,6 +37,20 @@
     gap: 1.5rem;
   }
 
+  &__search {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  &__empty {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
   &__group {
     display: flex;
     flex-direction: column;

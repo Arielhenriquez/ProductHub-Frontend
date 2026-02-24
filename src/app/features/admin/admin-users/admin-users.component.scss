@@ -1,0 +1,14 @@
+@use '../_admin-shared';
+
+.admin-users__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

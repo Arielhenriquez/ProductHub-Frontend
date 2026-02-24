@@ -1,73 +1,107 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StoreHeaderComponent } from '../../../components/store-header/store-header.component';
 import { StoreFooterComponent } from '../../../components/store-footer/store-footer.component';
+import { ProductsService } from '../../../core';
+import type { Product } from '../../../types';
+
+function formatPrice(price?: number | null): string {
+  if (price === null || price === undefined) return 'A negociar';
+  return `$${Number(price).toFixed(2)}`;
+}
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
   imports: [CommonModule, RouterModule, StoreHeaderComponent, StoreFooterComponent],
   templateUrl: './product-detail.component.html',
-  styleUrl: './product-detail.component.scss'
+  styleUrl: './product-detail.component.scss',
 })
 export class ProductDetailComponent implements OnInit {
-  selectedImage = 0;
+  private readonly productsService = inject(ProductsService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  product: Product | null = null;
+  selectedImageIndex = 0;
   isFavorite = false;
-  activeTab: 'features' | 'specs' | 'reviews' = 'features';
+  loading = false;
+  error: string | null = null;
 
-  product = {
-    id: 1,
-    name: 'Auriculares Inalámbricos Pro',
-    price: 299.99,
-    originalPrice: 399.99,
-    rating: 4.8,
-    reviews: 234,
-    images: ['/assets/images/placeholder.svg', '/assets/images/placeholder.svg', '/assets/images/placeholder.svg', '/assets/images/placeholder.svg'],
-    description: 'Experimenta una calidad de sonido premium con nuestros Auriculares Inalámbricos Pro. Con cancelación activa de ruido, 30 horas de batería y comodidad suprema para usar todo el día.',
-    features: [
-      'Cancelación Activa de Ruido',
-      '30 horas de batería',
-      'Almohadillas de cuero premium',
-      'Conectividad Bluetooth 5.0',
-      'Micrófono integrado',
-      'Diseño plegable con estuche'
-    ],
-    specifications: {
-      'Tamaño del Driver': '40mm',
-      'Respuesta de Frecuencia': '20Hz - 20kHz',
-      'Impedancia': '32 Ohms',
-      'Peso': '250g',
-      'Tiempo de Carga': '2 horas',
-      'Versión Bluetooth': '5.0'
-    }
-  };
+  readonly formatPrice = formatPrice;
+  readonly whatsappNumber = '1234567890';
 
-  whatsappNumber = '1234567890';
-
-  constructor(private route: ActivatedRoute) {}
-
-  ngOnInit() {
+  ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    // TODO: Load product by ID
+    if (!id) {
+      this.router.navigate(['/products']);
+      return;
+    }
+    this.loadProduct(id);
   }
 
-  handleWhatsAppContact() {
-    const message = encodeURIComponent(`Hola! Estoy interesado en: ${this.product.name} - Precio: $${this.product.price}`);
+  private loadProduct(id: string): void {
+    this.loading = true;
+    this.error = null;
+    this.productsService.getById(id).subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.statusCode === 200 && res.data) {
+          const data = res.data;
+          const cat = data.categoryResponses?.[0];
+          this.product = {
+            ...data,
+            category: data.category ?? (cat ? { id: cat.id, name: cat.name, description: cat.description } : undefined),
+          };
+          this.selectedImageIndex = this.getMainImageIndex();
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err?.message ?? 'Error al cargar el producto';
+      },
+    });
+  }
+
+  private getMainImageIndex(): number {
+    if (!this.product?.images?.length) return 0;
+    const main = this.product.images.find((img) => img.isMain);
+    return main ? this.product.images.indexOf(main) : 0;
+  }
+
+  get imageUrls(): string[] {
+    if (!this.product?.images?.length) return ['/assets/images/placeholder.svg'];
+    return this.product.images
+      .slice()
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((img) => img.url);
+  }
+
+  get currentImageUrl(): string {
+    const urls = this.imageUrls;
+    return urls[this.selectedImageIndex] ?? urls[0];
+  }
+
+  selectImage(index: number): void {
+    this.selectedImageIndex = index;
+  }
+
+  handleWhatsAppContact(): void {
+    if (!this.product) return;
+    const message = encodeURIComponent(
+      `Hola! Estoy interesado en: ${this.product.name} - Precio: ${this.formatPrice(this.product.price)}`
+    );
     window.open(`https://wa.me/${this.whatsappNumber}?text=${message}`, '_blank');
   }
 
-  toggleFavorite() {
+  toggleFavorite(): void {
     this.isFavorite = !this.isFavorite;
   }
 
-  selectImage(index: number) {
-    this.selectedImage = index;
+  /** Fallback when image fails to load (e.g. 409 Azure Blob). */
+  onImageError(e: Event): void {
+    const el = e.target as HTMLImageElement;
+    if (el?.src) el.src = '/assets/images/placeholder.svg';
   }
-
-  getSpecsArray(): { key: string; value: string }[] {
-    return Object.entries(this.product.specifications).map(([key, value]) => ({ key, value }));
-  }
-
-  Math = Math;
 }

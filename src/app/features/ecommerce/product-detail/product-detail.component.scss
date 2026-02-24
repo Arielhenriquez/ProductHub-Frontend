@@ -50,6 +50,29 @@
     }
   }
 
+  &__loading,
+  &__error {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+  }
+
+  &__error {
+    color: #dc2626;
+  }
+
+  &__category {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  &__stock {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
   &__grid {
     display: grid;
     gap: 2rem;

@@ -9,7 +9,7 @@
           <span>/</span>
           <a routerLink="/products">Productos</a>
           <span>/</span>
-          <span class="breadcrumb__current">{{ product.name }}</span>
+          <span class="breadcrumb__current">{{ product?.name ?? '…' }}</span>
         </nav>
       </div>
     </div>
@@ -17,99 +17,59 @@
     <div class="container product-detail">
       <a routerLink="/products" class="product-detail__back">← Volver a Productos</a>
 
-      <div class="product-detail__grid">
-        <div class="product-detail__gallery">
-          <div class="product-detail__main-image">
-            <img [src]="product.images[selectedImage] || '/assets/images/placeholder.svg'" [alt]="product.name" />
+      @if (loading) {
+        <p class="product-detail__loading">Cargando producto…</p>
+      } @else if (error || !product) {
+        <p class="product-detail__error">{{ error ?? 'Producto no encontrado' }}</p>
+      } @else {
+        <div class="product-detail__grid">
+          <div class="product-detail__gallery">
+            <div class="product-detail__main-image">
+              <img [src]="currentImageUrl" [alt]="product.name" (error)="onImageError($event)" />
+            </div>
+            @if (imageUrls.length > 1) {
+              <div class="product-detail__thumbs">
+                @for (img of imageUrls; track $index) {
+                  <button
+                    type="button"
+                    class="product-detail__thumb"
+                    [class.active]="selectedImageIndex === $index"
+                    (click)="selectImage($index)"
+                  >
+                    <img [src]="img" [alt]="product.name + ' vista ' + ($index + 1)" (error)="onImageError($event)" />
+                  </button>
+                }
+              </div>
+            }
           </div>
-          <div class="product-detail__thumbs">
-            @for (img of product.images; track $index) {
-              <button type="button" class="product-detail__thumb" [class.active]="selectedImage === $index" (click)="selectImage($index)">
-                <img [src]="img || '/assets/images/placeholder.svg'" [alt]="product.name + ' view ' + ($index + 1)" />
+
+          <div class="product-detail__info">
+            <h1 class="product-detail__title">{{ product.name }}</h1>
+            @if (product.category) {
+              <p class="product-detail__category">{{ product.category.name }}</p>
+            }
+            <div class="product-detail__prices">
+              <span class="product-detail__price">{{ formatPrice(product.price) }}</span>
+            </div>
+            <p class="product-detail__desc">{{ product.description ?? 'Sin descripción.' }}</p>
+            @if (product.quantityInStock !== undefined) {
+              <p class="product-detail__stock">Stock: {{ product.quantityInStock }}</p>
+            }
+            <div class="product-detail__actions">
+              <button type="button" class="btn btn--whatsapp" (click)="handleWhatsAppContact()">
+                Contactar por WhatsApp
               </button>
-            }
-          </div>
-        </div>
-
-        <div class="product-detail__info">
-          <h1 class="product-detail__title">{{ product.name }}</h1>
-          <div class="product-detail__rating">
-            @for (star of [1,2,3,4,5]; track star) {
-              <span class="product-detail__star" [class.filled]="star <= Math.floor(product.rating)">★</span>
-            }
-            <span class="product-detail__reviews">{{ product.rating }} ({{ product.reviews }} reseñas)</span>
-          </div>
-          <div class="product-detail__prices">
-            <span class="product-detail__price">${{ product.price }}</span>
-            @if (product.originalPrice) {
-              <span class="product-detail__old-price">${{ product.originalPrice }}</span>
-              <span class="product-detail__save">Ahorra ${{ (product.originalPrice - product.price).toFixed(2) }}</span>
-            }
-          </div>
-          <p class="product-detail__desc">{{ product.description }}</p>
-          <div class="product-detail__actions">
-            <button type="button" class="btn btn--whatsapp" (click)="handleWhatsAppContact()">📞 Contactar por WhatsApp</button>
-            <button type="button" class="btn btn--icon" (click)="toggleFavorite()">{{ isFavorite ? '❤️' : '🤍' }}</button>
-          </div>
-          <div class="product-detail__payment">
-            <h4>Métodos de Pago</h4>
-            <p>Banco Nacional · Cuenta: 1234-5678-9012-3456 · Titular: Juan Pérez</p>
-            <p>Contacto WhatsApp para coordinar entrega</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="product-detail__tabs">
-        <div class="product-detail__tab-head">
-          <button type="button" class="product-detail__tab-btn" [class.active]="activeTab === 'features'" (click)="activeTab = 'features'">Características</button>
-          <button type="button" class="product-detail__tab-btn" [class.active]="activeTab === 'specs'" (click)="activeTab = 'specs'">Especificaciones</button>
-          <button type="button" class="product-detail__tab-btn" [class.active]="activeTab === 'reviews'" (click)="activeTab = 'reviews'">Reseñas ({{ product.reviews }})</button>
-        </div>
-        @if (activeTab === 'features') {
-          <div class="product-detail__tab-content">
-            <h3>Características Principales</h3>
-            <ul class="product-detail__features">
-              @for (f of product.features; track f) {
-                <li>{{ f }}</li>
-              }
-            </ul>
-          </div>
-        }
-        @if (activeTab === 'specs') {
-          <div class="product-detail__tab-content">
-            <h3>Especificaciones Técnicas</h3>
-            <dl class="product-detail__specs">
-              @for (spec of getSpecsArray(); track spec.key) {
-                <div class="product-detail__spec-row">
-                  <dt>{{ spec.key }}</dt>
-                  <dd>{{ spec.value }}</dd>
-                </div>
-              }
-            </dl>
-          </div>
-        }
-        @if (activeTab === 'reviews') {
-          <div class="product-detail__tab-content">
-            <h3>Reseñas de Clientes</h3>
-            <div class="product-detail__review">
-              <div class="product-detail__review-header">
-                <strong>Juan D.</strong>
-                <span>★★★★★</span>
-                <span class="product-detail__review-date">Hace 2 semanas</span>
-              </div>
-              <p>Calidad de sonido increíble y muy cómodos! La cancelación de ruido funciona perfectamente.</p>
+              <button type="button" class="btn btn--icon" (click)="toggleFavorite()">
+                {{ isFavorite ? '❤️' : '🤍' }}
+              </button>
             </div>
-            <div class="product-detail__review">
-              <div class="product-detail__review-header">
-                <strong>María S.</strong>
-                <span>★★★★☆</span>
-                <span class="product-detail__review-date">Hace 1 mes</span>
-              </div>
-              <p>Excelentes auriculares. La duración de la batería es impresionante.</p>
+            <div class="product-detail__payment">
+              <h4>Métodos de Pago</h4>
+              <p>Contacto WhatsApp para coordinar pago y entrega.</p>
             </div>
           </div>
-        }
-      </div>
+        </div>
+      }
     </div>
   </main>
 

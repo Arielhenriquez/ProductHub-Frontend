@@ -5,10 +5,14 @@
     <section class="hero">
       <div class="hero__inner">
         <h1 class="hero__title">Descubre Tus Productos Perfectos</h1>
-        <p class="hero__subtitle">Explora miles de productos premium. Contacta directamente con nosotros para coordinar tu compra.</p>
+        <p class="hero__subtitle">
+          Explora miles de productos premium. Contacta directamente con nosotros para coordinar tu compra.
+        </p>
         <div class="hero__actions">
           <a routerLink="/products" class="btn btn--primary btn--lg">Ver Productos →</a>
-          <a routerLink="/products" [queryParams]="{featured: true}" class="btn btn--outline btn--lg">Productos Destacados</a>
+          <a routerLink="/products" [queryParams]="{ featured: true }" class="btn btn--outline btn--lg">
+            Productos Destacados
+          </a>
         </div>
       </div>
     </section>
@@ -35,52 +39,80 @@
       </div>
     </section>
 
-    <section class="categories">
-      <div class="container">
-        <div class="categories__header">
-          <h2 class="categories__title">Compra por Categoría</h2>
-          <p class="categories__subtitle">Explora nuestras colecciones</p>
+    @if (categories.length > 0) {
+      <section class="categories">
+        <div class="container">
+          <div class="categories__header">
+            <h2 class="categories__title">Compra por Categoría</h2>
+            <p class="categories__subtitle">Explora nuestras colecciones</p>
+          </div>
+          <div class="categories__grid">
+            @for (cat of categories; track cat.id) {
+              <a
+                [routerLink]="['/products']"
+                [queryParams]="{ category: cat.id }"
+                class="category-card"
+              >
+                <div class="category-card__image category-card__image--blue">
+                  <span class="category-card__placeholder">{{ cat.name.charAt(0) }}</span>
+                </div>
+                <div class="category-card__body">
+                  <h3>{{ cat.name }}</h3>
+                  <p>{{ cat.description || 'Ver productos' }}</p>
+                  <span class="category-card__link">Explorar →</span>
+                </div>
+              </a>
+            }
+          </div>
         </div>
-        <div class="categories__grid">
-          <a [routerLink]="['/products']" [queryParams]="{category: 'electronics'}" class="category-card">
-            <div class="category-card__image category-card__image--blue">
-              <img src="/assets/images/modern-electronics.png" alt="Electrónica" />
-            </div>
-            <div class="category-card__body">
-              <h3>Electrónica</h3>
-              <p>Últimas tecnologías y gadgets</p>
-              <span class="category-card__link">Explorar →</span>
-            </div>
-          </a>
-          <a [routerLink]="['/products']" [queryParams]="{category: 'fashion'}" class="category-card">
-            <div class="category-card__image category-card__image--pink">
-              <img src="/assets/images/fashion-clothing-accessories.png" alt="Moda" />
-            </div>
-            <div class="category-card__body">
-              <h3>Moda</h3>
-              <p>Estilos modernos para todos</p>
-              <span class="category-card__link">Explorar →</span>
-            </div>
-          </a>
-          <a [routerLink]="['/products']" [queryParams]="{category: 'home'}" class="category-card">
-            <div class="category-card__image category-card__image--green">
-              <img src="/assets/images/home-garden-decor.jpg" alt="Hogar y Jardín" />
-            </div>
-            <div class="category-card__body">
-              <h3>Hogar y Jardín</h3>
-              <p>Transforma tu espacio</p>
-              <span class="category-card__link">Explorar →</span>
-            </div>
-          </a>
+      </section>
+    }
+
+    @if (featuredProducts.length > 0) {
+      <section class="featured">
+        <div class="container">
+          <div class="featured__header">
+            <h2 class="featured__title">Productos Destacados</h2>
+            <a routerLink="/products" class="featured__link">Ver todos →</a>
+          </div>
+          <div class="featured__grid">
+            @for (product of featuredProducts; track product.id) {
+              <a [routerLink]="['/products', product.id]" class="featured-card">
+                <div class="featured-card__image-wrap">
+                  <img
+                    [src]="productImageUrl(product)"
+                    [alt]="product.name"
+                    class="featured-card__image"
+                    (error)="onImageError($event)"
+                  />
+                </div>
+                <div class="featured-card__body">
+                  <h3 class="featured-card__title">{{ product.name }}</h3>
+                  <p class="featured-card__price">{{ formatPrice(product.price) }}</p>
+                </div>
+              </a>
+            }
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    }
+
+    @if (!loadingProducts && featuredProducts.length === 0 && !loadingCategories && categories.length === 0) {
+      <section class="empty-state">
+        <div class="container">
+          <p class="empty-state__text">Aún no hay productos ni categorías. Vuelve pronto.</p>
+          <a routerLink="/products" class="btn btn--primary">Ver productos</a>
+        </div>
+      </section>
+    }
 
     <section class="cta">
       <div class="container">
         <div class="cta__card">
           <h2 class="cta__title">Comienza a Comprar Hoy</h2>
-          <p class="cta__text">Únete a miles de clientes satisfechos y encuentra tus productos perfectos</p>
+          <p class="cta__text">
+            Únete a miles de clientes satisfechos y encuentra tus productos perfectos
+          </p>
           <a routerLink="/products" class="btn btn--secondary btn--lg">Ver Todos los Productos →</a>
         </div>
       </div>

@@ -1,20 +1,37 @@
 <div class="product-filters">
   <div class="product-filters__header">
-    <h3 class="product-filters__title">Filters</h3>
-    <button type="button" class="product-filters__clear" (click)="clearFilters()">Clear all</button>
+    <h3 class="product-filters__title">Filtros</h3>
+    <button type="button" class="product-filters__clear" (click)="clearFilters()">Limpiar</button>
   </div>
   <div class="product-filters__body">
     <div class="product-filters__group">
-      <h4 class="product-filters__label">Categories</h4>
-      @for (category of categories; track category.Id) {
+      <h4 class="product-filters__label">Buscar</h4>
+      <input
+        type="text"
+        class="product-filters__search"
+        [value]="search()"
+        (input)="onSearchInput($any($event.target).value)"
+        placeholder="Nombre del producto…"
+      />
+    </div>
+    <div class="product-filters__group">
+      <h4 class="product-filters__label">Categorías</h4>
+      @for (category of categoryList; track category.id) {
         <label class="product-filters__checkbox">
-          <input type="checkbox" [checked]="isCategorySelected(category.Id)" (change)="toggleCategory(category.Id)" />
-          <span>{{ category.Name }}</span>
+          <input
+            type="checkbox"
+            [checked]="isCategorySelected(category.id)"
+            (change)="toggleCategory(category.id)"
+          />
+          <span>{{ category.name }}</span>
         </label>
+      }
+      @if (categoryList.length === 0) {
+        <p class="product-filters__empty">No hay categorías</p>
       }
     </div>
     <div class="product-filters__group">
-      <h4 class="product-filters__label">Price Range</h4>
+      <h4 class="product-filters__label">Precio máximo</h4>
       <div class="product-filters__range">
         <input type="range" min="0" max="1000" step="10" [(ngModel)]="priceMax" />
         <div class="product-filters__range-labels">
@@ -23,17 +40,5 @@
         </div>
       </div>
     </div>
-    <div class="product-filters__group">
-      <h4 class="product-filters__label">Availability</h4>
-      <label class="product-filters__checkbox">
-        <input type="checkbox" checked />
-        <span>Active Products</span>
-      </label>
-      <label class="product-filters__checkbox">
-        <input type="checkbox" />
-        <span>Price Negotiable</span>
-      </label>
-    </div>
-    <button type="button" class="product-filters__apply">Apply Filters</button>
   </div>
 </div>
