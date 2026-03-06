@@ -14,6 +14,8 @@ export interface Category {
   name: string;
   description: string;
   isActive?: boolean;
+  /** Backend may return createdDate or createdAt */
+  createdDate?: string;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -19,3 +19,14 @@ export type {
 export type { ProductImage } from './product-image.types';
 
 export type { CategoryDto, Category } from './category.types';
+
+export type {
+  RegisterDto,
+  LoginDto,
+  AuthUser,
+  LoginResponse,
+  RegisterResponse,
+  UserResponseDto,
+  UpdateUserDto,
+  ApiErrorBody,
+} from './auth.types';

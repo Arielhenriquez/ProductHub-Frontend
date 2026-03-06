@@ -15,28 +15,57 @@
         <p class="register-card__subtitle">Ingresa tus datos para crear una cuenta</p>
       </div>
       <div class="register-card__body">
+        @if (error) {
+          <div class="register-form__error">{{ error }}</div>
+        }
+        @if (errors.length > 0) {
+          <ul class="register-form__errors">
+            @for (e of errors; track e) {
+              <li>{{ e }}</li>
+            }
+          </ul>
+        }
         <form (ngSubmit)="handleSubmit()" class="register-form">
           <div class="register-form__group">
-            <label for="name">Nombre completo</label>
-            <input id="name" type="text" placeholder="Juan Pérez" required [(ngModel)]="formData.name" name="name" />
+            <label for="firstName">Nombre *</label>
+            <input id="firstName" type="text" placeholder="Juan" required maxlength="100" [(ngModel)]="formData.firstName" name="firstName" />
+            @if (fieldErrors['firstName']) {
+              <span class="register-form__field-error">{{ fieldErrors['firstName'] }}</span>
+            }
           </div>
           <div class="register-form__group">
-            <label for="email">Email</label>
-            <input id="email" type="email" placeholder="tu@ejemplo.com" required [(ngModel)]="formData.email" name="email" />
+            <label for="lastName">Apellido</label>
+            <input id="lastName" type="text" placeholder="Pérez (opcional)" maxlength="100" [(ngModel)]="formData.lastName" name="lastName" />
+            @if (fieldErrors['lastName']) {
+              <span class="register-form__field-error">{{ fieldErrors['lastName'] }}</span>
+            }
           </div>
           <div class="register-form__group">
-            <label for="password">Contraseña</label>
+            <label for="email">Email *</label>
+            <input id="email" type="email" placeholder="tu@ejemplo.com" required maxlength="200" [(ngModel)]="formData.email" name="email" />
+            @if (fieldErrors['email']) {
+              <span class="register-form__field-error">{{ fieldErrors['email'] }}</span>
+            }
+          </div>
+          <div class="register-form__group">
+            <label for="password">Contraseña *</label>
             <div class="register-form__input-wrap">
-              <input id="password" [type]="showPassword ? 'text' : 'password'" placeholder="Crea una contraseña segura" required minlength="8" [(ngModel)]="formData.password" name="password" />
+              <input id="password" [type]="showPassword ? 'text' : 'password'" placeholder="Mínimo 8 caracteres" required minlength="8" [(ngModel)]="formData.password" name="password" />
               <button type="button" class="register-form__toggle" (click)="showPassword = !showPassword" aria-label="Ver contraseña">{{ showPassword ? '🙈' : '👁' }}</button>
             </div>
+            @if (fieldErrors['password']) {
+              <span class="register-form__field-error">{{ fieldErrors['password'] }}</span>
+            }
           </div>
           <div class="register-form__group">
-            <label for="confirmPassword">Confirmar contraseña</label>
+            <label for="confirmPassword">Confirmar contraseña *</label>
             <div class="register-form__input-wrap">
-              <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Confirma tu contraseña" required minlength="8" [(ngModel)]="formData.confirmPassword" name="confirmPassword" />
+              <input id="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Repite tu contraseña" required minlength="8" [(ngModel)]="formData.confirmPassword" name="confirmPassword" />
               <button type="button" class="register-form__toggle" (click)="showConfirmPassword = !showConfirmPassword" aria-label="Ver contraseña">{{ showConfirmPassword ? '🙈' : '👁' }}</button>
             </div>
+            @if (fieldErrors['confirmPassword']) {
+              <span class="register-form__field-error">{{ fieldErrors['confirmPassword'] }}</span>
+            }
           </div>
           <label class="register-form__checkbox">
             <input type="checkbox" [(ngModel)]="formData.acceptTerms" name="acceptTerms" />
@@ -53,9 +82,5 @@
         <a routerLink="/login" class="register-form__link-btn">Iniciar sesión</a>
       </div>
     </div>
-
-    <p class="register-page__footer">
-      <a routerLink="/">Volver a la tienda</a>
-    </p>
   </div>
 </div>

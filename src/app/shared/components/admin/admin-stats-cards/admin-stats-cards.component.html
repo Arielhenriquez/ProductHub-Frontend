@@ -1,0 +1,16 @@
+<div class="admin-stats-grid">
+  @for (stat of stats(); track stat.label) {
+    <div class="admin-stat-card">
+      <div class="admin-stat-card__content">
+        <span
+          class="admin-stat-card__icon"
+          [style.background]="stat.iconBg ?? 'rgba(37, 99, 235, 0.1)'"
+        >{{ stat.icon ?? '📊' }}</span>
+        <div>
+          <p class="admin-stat-card__value">{{ stat.value }}</p>
+          <p class="admin-stat-card__meta">{{ stat.label }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</div>

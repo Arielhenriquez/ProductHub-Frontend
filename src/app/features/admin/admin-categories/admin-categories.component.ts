@@ -3,11 +3,26 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoriesService } from '../../../core';
 import type { Category, CategoryDto } from '../../../types';
+import {
+  AdminPageHeaderComponent,
+  AdminStatsCardsComponent,
+  AdminToolbarComponent,
+  AdminTableShellComponent,
+  AdminRowActionsComponent,
+} from '../../../shared/components/admin';
 
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AdminPageHeaderComponent,
+    AdminStatsCardsComponent,
+    AdminToolbarComponent,
+    AdminTableShellComponent,
+    AdminRowActionsComponent,
+  ],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
 })

@@ -90,4 +90,13 @@
     flex-direction: column;
     gap: 0.25rem;
   }
+
+  &__btn {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font: inherit;
+  }
 }

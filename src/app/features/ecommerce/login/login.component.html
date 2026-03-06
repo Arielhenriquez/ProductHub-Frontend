@@ -9,12 +9,33 @@
       <p class="login-page__subtitle">Inicia sesión para seguir explorando</p>
     </div>
 
+    @if (registered) {
+      <div class="login-page__message login-page__message--success">
+        Cuenta creada. Inicia sesión con tu email y contraseña.
+      </div>
+    }
+    @if (expired) {
+      <div class="login-page__message login-page__message--warning">
+        Tu sesión ha expirado. Inicia sesión de nuevo.
+      </div>
+    }
+
     <div class="login-card">
       <div class="login-card__header">
         <h2 class="login-card__title">Iniciar sesión</h2>
         <p class="login-card__subtitle">Ingresa tu email y contraseña</p>
       </div>
       <div class="login-card__body">
+        @if (error) {
+          <div class="login-form__error">{{ error }}</div>
+        }
+        @if (errors.length > 0) {
+          <ul class="login-form__errors">
+            @for (e of errors; track e) {
+              <li>{{ e }}</li>
+            }
+          </ul>
+        }
         <form (ngSubmit)="handleSubmit()" class="login-form">
           <div class="login-form__group">
             <label for="email">Email</label>
@@ -26,6 +47,7 @@
               <input id="password" [type]="showPassword ? 'text' : 'password'" placeholder="Tu contraseña" required [(ngModel)]="formData.password" name="password" />
               <button type="button" class="login-form__toggle" (click)="showPassword = !showPassword" aria-label="Ver contraseña">{{ showPassword ? '🙈' : '👁' }}</button>
             </div>
+            <a routerLink="/forgot-password" class="login-form__forgot">¿Olvidé mi contraseña?</a>
           </div>
           <label class="login-form__checkbox">
             <input type="checkbox" [(ngModel)]="formData.rememberMe" name="rememberMe" />
@@ -42,9 +64,5 @@
         <a routerLink="/register" class="login-form__link-btn">Crear cuenta</a>
       </div>
     </div>
-
-    <p class="login-page__footer">
-      <a routerLink="/">Volver a la tienda</a>
-    </p>
   </div>
 </div>

@@ -33,6 +33,7 @@ export interface Product {
   category?: { id: string; name: string; description?: string };
   categoryResponses?: Array<{ id: string; name: string; description?: string }>;
   images?: ProductImage[];
+  createdDate?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -55,4 +56,7 @@ export interface ProductListItem {
   images?: ProductImage[];
   /** Main image URL for list/card display */
   mainImageUrl?: string;
+  /** Backend may return createdDate or createdAt */
+  createdDate?: string;
+  createdAt?: string;
 }

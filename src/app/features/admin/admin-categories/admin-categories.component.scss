@@ -1,6 +1,92 @@
-@use '../_admin-shared';
+@use '../../../shared/components/admin/admin-shared';
 
-.admin-filters__search {
-  position: relative;
-  max-width: 24rem;
+.admin-categories__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: rgba(37, 99, 235, 0.1);
+  font-size: 0.875rem;
+}
+
+.admin-table__desc {
+  max-width: 16rem;
+}
+
+.admin-dialog--narrow {
+  max-width: 28rem;
+}
+
+.admin-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.admin-dialog {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 42rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.admin-dialog__head {
+  padding: 1.5rem 1.5rem 0;
+}
+
+.admin-dialog__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.admin-dialog__desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0;
+}
+
+.admin-dialog__form {
+  padding: 1.5rem;
+}
+
+.admin-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+}
+
+.admin-form-group {
+  margin-bottom: 1rem;
+}
+
+.admin-form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.admin-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  &--textarea {
+    resize: vertical;
+    min-height: 4rem;
+  }
 }

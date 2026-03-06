@@ -43,6 +43,17 @@
   font-size: 0.875rem;
 }
 
+.admin-login__forgot {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #2563eb;
+  text-decoration: none;
+  margin-top: -0.25rem;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .admin-login__link {
   display: block;
   margin-top: 1rem;

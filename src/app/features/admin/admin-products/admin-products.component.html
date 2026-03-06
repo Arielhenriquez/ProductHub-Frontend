@@ -1,104 +1,96 @@
 <div class="admin-page">
-  <div class="admin-page__head">
-    <div>
-      <h1 class="admin-page__title">Productos</h1>
-      <p class="admin-page__subtitle">Gestiona tu inventario de productos</p>
-    </div>
-    <button type="button" class="admin-btn admin-btn--primary" (click)="openCreate()">+ Agregar Producto</button>
-  </div>
+  <app-admin-page-header
+    title="Productos"
+    subtitle="Gestiona tu inventario de productos"
+  >
+    <button type="button" class="admin-btn admin-btn--primary" primaryAction (click)="openCreate()">+ Agregar Producto</button>
+  </app-admin-page-header>
 
-  <div class="admin-card admin-card--filters">
-    <div class="admin-filters">
-      <div class="admin-filters__search">
-        <span class="admin-filters__icon">🔍</span>
-        <input
-          type="text"
-          class="admin-filters__input"
-          placeholder="Buscar productos..."
-          [(ngModel)]="searchQuery"
-        />
-      </div>
-      <select class="admin-filters__select" [(ngModel)]="filterCategory">
-        <option value="all">Todas las categorías</option>
-        @for (cat of categories; track cat.id) {
-          <option [value]="cat.id">{{ cat.name }}</option>
-        }
-      </select>
-      <select class="admin-filters__select" [(ngModel)]="filterStatus">
-        <option value="all">Todos</option>
-        <option value="active">Activos</option>
-        <option value="inactive">Inactivos</option>
-      </select>
-    </div>
-  </div>
+  <app-admin-stats-cards
+    [stats]="[
+      { value: products.length, label: 'Total productos', icon: '📦' },
+      { value: activeProductsCount, label: 'Activos', icon: '✓', iconBg: '#d1fae5' },
+      { value: products.length - activeProductsCount, label: 'Inactivos', icon: '—', iconBg: '#f3f4f6' }
+    ]"
+  />
 
-  <div class="admin-card">
-    <div class="admin-card__head">
-      <h2 class="admin-card__title">{{ filteredProducts.length }} {{ filteredProducts.length === 1 ? 'producto' : 'productos' }}</h2>
-    </div>
-    <div class="admin-card__body admin-card__body--table">
-      @if (loading) {
-        <p class="admin-table__empty">Cargando…</p>
-      } @else if (error) {
-        <p class="admin-table__empty admin-table__empty--error">{{ error }}</p>
-      } @else {
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Producto</th>
-              <th>Categoría</th>
-              <th>Precio</th>
-              <th>Estado</th>
-              <th>Creado</th>
-              <th class="admin-table__actions">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (filteredProducts.length === 0) {
-              <tr>
-                <td colspan="7" class="admin-table__empty">No se encontraron productos</td>
-              </tr>
-            } @else {
-              @for (product of filteredProducts; track product.id) {
-                <tr>
-                  <td class="admin-table__muted">{{ product.id.slice(0, 8) }}…</td>
-                  <td>
-                    <div class="admin-table__product">
-                      <img
-                        [src]="imageUrl(product)"
-                        [alt]="product.name"
-                        class="admin-table__thumb"
-                        (error)="onImageError($event)"
-                      />
-                      <div>
-                        <div class="admin-table__name">{{ product.name }}</div>
-                        @if (product.description) {
-                          <div class="admin-table__desc">{{ product.description }}</div>
-                        }
-                      </div>
-                    </div>
-                  </td>
-                  <td><span class="admin-badge admin-badge--outline">{{ categoryName(product) }}</span></td>
-                  <td class="admin-table__name">{{ formatPrice(product.price) }}</td>
-                  <td>
-                    <span class="admin-badge" [class.admin-badge--success]="product.isActive">
-                      {{ product.isActive ? 'Activo' : 'Inactivo' }}
-                    </span>
-                  </td>
-                  <td class="admin-table__muted">—</td>
-                  <td class="admin-table__actions">
-                    <button type="button" class="admin-btn admin-btn--icon" (click)="openEdit(product)" title="Editar">✎</button>
-                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteProduct(product)" title="Eliminar">🗑</button>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+  <app-admin-toolbar
+    searchPlaceholder="Buscar productos..."
+    [searchValue]="searchQuery"
+    (searchValueChange)="searchQuery = $event"
+  >
+    <select class="admin-select" [(ngModel)]="filterCategory">
+      <option value="all">Todas las categorías</option>
+      @for (cat of categories; track cat.id) {
+        <option [value]="cat.id">{{ cat.name }}</option>
       }
-    </div>
-  </div>
+    </select>
+    <select class="admin-select" [(ngModel)]="filterStatus">
+      <option value="all">Todos</option>
+      <option value="active">Activos</option>
+      <option value="inactive">Inactivos</option>
+    </select>
+  </app-admin-toolbar>
+
+  <app-admin-table-shell
+    [tableTitle]="filteredProducts.length + (filteredProducts.length === 1 ? ' producto' : ' productos')"
+    [loading]="loading"
+    [error]="error"
+  >
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th>Estado</th>
+          <th>Creado</th>
+          <th class="admin-table__actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (filteredProducts.length === 0) {
+          <tr>
+            <td colspan="7" class="admin-table__empty">No se encontraron productos</td>
+          </tr>
+        } @else {
+          @for (product of filteredProducts; track product.id) {
+            <tr>
+              <td class="admin-table__muted">{{ product.id.slice(0, 8) }}…</td>
+              <td>
+                <div class="admin-table__product">
+                  <img
+                    [src]="imageUrl(product)"
+                    [alt]="product.name"
+                    class="admin-table__thumb"
+                    (error)="onImageError($event)"
+                  />
+                  <div>
+                    <div class="admin-table__name">{{ product.name }}</div>
+                    @if (product.description) {
+                      <div class="admin-table__desc">{{ product.description }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td><span class="admin-badge admin-badge--outline">{{ categoryName(product) }}</span></td>
+              <td class="admin-table__name">{{ formatPrice(product.price) }}</td>
+              <td>
+                <span class="admin-badge" [class.admin-badge--success]="product.isActive">
+                  {{ product.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="admin-table__muted">{{ (product.createdDate ?? product.createdAt) ? ((product.createdDate ?? product.createdAt) | date:'d MMM y') : '—' }}</td>
+              <td class="admin-table__actions">
+                <app-admin-row-actions (edit)="openEdit(product)" (delete)="deleteProduct(product)" />
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </app-admin-table-shell>
 
   @if (dialogOpen) {
     <div class="admin-dialog-backdrop" (click)="closeDialog()">
@@ -120,7 +112,7 @@
           </div>
           <div class="admin-form-row">
             <div class="admin-form-group">
-              <label for="product-price">Precio (USD)</label>
+              <label for="product-price">Precio</label>
               <input id="product-price" type="number" [(ngModel)]="form.price" name="price" step="0.01" min="0" placeholder="0.00" class="admin-input" />
               <span class="admin-form-hint">Dejar vacío si es a negociar</span>
             </div>
@@ -145,9 +137,85 @@
             </div>
             <input id="product-active" type="checkbox" [(ngModel)]="form.isActive" name="isActive" class="admin-checkbox" />
           </div>
+
+          <div class="admin-form-group">
+            <label>Imágenes</label>
+            @if (!editingProduct) {
+              <p class="admin-form-hint">Opcional. Máximo {{ maxImageFiles }} imágenes, 5 MB cada una (JPEG, PNG, GIF, WebP).</p>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                (change)="onFilesSelected($event)"
+                class="admin-input admin-input--file"
+              />
+              @if (pendingFiles.length) {
+                <div class="admin-image-previews">
+                  @for (f of pendingFiles; track f.name + $index; let i = $index) {
+                    <div class="admin-image-preview">
+                      <img [src]="pendingPreviewUrls[i]" [alt]="f.name" />
+                      <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingFile(i)" title="Quitar">×</button>
+                    </div>
+                  }
+                </div>
+              }
+            } @else {
+              @if (productDetail?.images?.length) {
+                <p class="admin-form-hint">Imágenes actuales. Puedes eliminar o marcar una como principal.</p>
+                <div class="admin-image-previews">
+                  @for (img of productDetail!.images; track img.id) {
+                    <div class="admin-image-preview">
+                      <img [src]="img.url" [alt]="'Imagen ' + img.id" />
+                      <div class="admin-image-preview__actions">
+                        @if (img.isMain) {
+                          <span class="admin-image-preview__badge">Principal</span>
+                        } @else {
+                          <button type="button" class="admin-btn admin-btn--outline admin-btn--sm" (click)="setMainImage(img.id)">Hacer principal</button>
+                        }
+                        <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteImage(img.id)" title="Eliminar">🗑</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              @if ((productDetail?.images?.length ?? 0) + pendingNewFiles.length < maxImageFiles) {
+                <p class="admin-form-hint">Añadir más imágenes (máx. {{ maxImageFiles }} en total, 5 MB cada una).</p>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  (change)="onNewFilesSelected($event)"
+                  class="admin-input admin-input--file"
+                />
+              }
+              @if (pendingNewFiles.length) {
+                <div class="admin-image-previews">
+                  @for (f of pendingNewFiles; track f.name + $index; let i = $index) {
+                    <div class="admin-image-preview">
+                      <img [src]="pendingNewPreviewUrls[i]" [alt]="f.name" />
+                      <span class="admin-image-preview__badge admin-image-preview__badge--new">Nueva</span>
+                      <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingNewFile(i)" title="Quitar">×</button>
+                    </div>
+                  }
+                </div>
+              }
+            }
+            @if (imageError) {
+              <p class="admin-form-hint admin-form-hint--error">{{ imageError }}</p>
+            }
+          </div>
+
           <div class="admin-dialog__actions">
-            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
-            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">{{ editingProduct ? 'Guardar Cambios' : 'Agregar Producto' }}</button>
+            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()" [disabled]="saving || uploadingImages">Cancelar</button>
+            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving || uploadingImages">
+              @if (uploadingImages) {
+                Subiendo imágenes...
+              } @else if (saving) {
+                {{ editingProduct ? 'Guardando...' : 'Creando producto...' }}
+              } @else {
+                {{ editingProduct ? 'Guardar Cambios' : 'Agregar Producto' }}
+              }
+            </button>
           </div>
         </form>
       </div>

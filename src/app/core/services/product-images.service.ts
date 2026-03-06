@@ -15,10 +15,19 @@ export class ProductImagesService {
    * POST /api/products/{productId}/images
    * Upload one or more images (multipart/form-data, field: "files").
    */
+  uploadProductImages(productId: string, files: File[]): Observable<ApiResponse<ProductImage[]>> {
+    return this.upload(productId, files);
+  }
+
+  /** @deprecated Use uploadProductImages */
+  uploadImages(productId: string, files: File[]): Observable<ApiResponse<ProductImage[]>> {
+    return this.uploadProductImages(productId, files);
+  }
+
   upload(productId: string, files: File | File[]): Observable<ApiResponse<ProductImage[]>> {
     const formData = new FormData();
     const list = Array.isArray(files) ? files : [files];
-    list.forEach((file) => formData.append('files', file, file.name));
+    list.forEach((file) => formData.append('files', file));
 
     return this.http.post<ApiResponse<ProductImage[]>>(
       `${this.baseUrl}/${productId}/images`,

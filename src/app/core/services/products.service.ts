@@ -34,13 +34,13 @@ export class ProductsService {
     return this.http.get<ApiResponse<Product>>(`${this.url}/${id}`);
   }
 
-  /** POST /api/products */
-  create(dto: CreateProductDto): Observable<ApiResponse<Product>> {
+  /** POST /api/products - creates product and returns created product with id */
+  createProduct(dto: CreateProductDto): Observable<ApiResponse<Product>> {
     return this.http.post<ApiResponse<Product>>(this.url, dto);
   }
 
   /** PUT /api/products/{id} */
-  update(id: string, dto: UpdateProductDto): Observable<ApiResponse<Product>> {
+  updateProduct(id: string, dto: UpdateProductDto): Observable<ApiResponse<Product>> {
     return this.http.put<ApiResponse<Product>>(`${this.url}/${id}`, dto);
   }
 

@@ -1,0 +1,14 @@
+<div class="admin-table-card">
+  <div class="admin-table-card__head">
+    <h2 class="admin-table-card__title">{{ tableTitle() }}</h2>
+  </div>
+  <div class="admin-table-card__body">
+    @if (error()) {
+      <p class="admin-table__empty admin-table__empty--error">{{ error() }}</p>
+    } @else if (loading()) {
+      <p class="admin-table__empty">Cargando…</p>
+    } @else {
+      <ng-content />
+    }
+  </div>
+</div>

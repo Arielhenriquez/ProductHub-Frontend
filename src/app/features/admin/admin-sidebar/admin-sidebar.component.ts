@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../core';
 
 interface NavItem {
   href: string;
@@ -16,6 +17,9 @@ interface NavItem {
   styleUrl: './admin-sidebar.component.scss',
 })
 export class AdminSidebarComponent {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
   navItems: NavItem[] = [
     { href: '/admin/dashboard', label: 'Panel Principal', icon: '▣' },
     { href: '/admin/products', label: 'Productos', icon: '📦' },
@@ -23,10 +27,12 @@ export class AdminSidebarComponent {
     { href: '/admin/users', label: 'Usuarios', icon: '👥' },
   ];
 
-  constructor(public router: Router) {}
-
   isActive(href: string): boolean {
     const url = this.router.url;
     return url === href || url.startsWith(href + '/');
+  }
+
+  logout(): void {
+    this.auth.logout();
   }
 }

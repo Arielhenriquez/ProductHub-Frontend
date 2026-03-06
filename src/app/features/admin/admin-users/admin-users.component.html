@@ -1,115 +1,144 @@
 <div class="admin-page">
-  <div>
-    <h1 class="admin-page__title">Usuarios</h1>
-    <p class="admin-page__subtitle">Visualiza y gestiona los usuarios registrados</p>
-  </div>
+  <app-admin-page-header
+    title="Usuarios"
+    subtitle="Visualiza y gestiona los usuarios registrados (solo Admin)"
+  />
 
-  <div class="admin-dashboard__stats" style="grid-template-columns: repeat(3, 1fr);">
-    <div class="admin-card">
-      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
-        <span class="admin-card__action-icon">🛡</span>
-        <div>
-          <p class="admin-card__value" style="margin: 0;">{{ totalAdmins }}</p>
-          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Administradores</p>
-        </div>
-      </div>
-    </div>
-    <div class="admin-card">
-      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
-        <span class="admin-card__action-icon" style="background: #dbeafe;">👤</span>
-        <div>
-          <p class="admin-card__value" style="margin: 0;">{{ totalUsers }}</p>
-          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Usuarios normales</p>
-        </div>
-      </div>
-    </div>
-    <div class="admin-card">
-      <div class="admin-card__content" style="flex-direction: row; gap: 1rem; padding: 1rem;">
-        <span class="admin-card__action-icon" style="background: #d1fae5;">✓</span>
-        <div>
-          <p class="admin-card__value" style="margin: 0;">{{ totalActive }}</p>
-          <p class="admin-card__meta" style="margin: 0.25rem 0 0;">Activos</p>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-admin-stats-cards
+    [stats]="[
+      { value: totalAdmins, label: 'Administradores', icon: '🛡' },
+      { value: totalUsers, label: 'Usuarios', icon: '👤', iconBg: '#dbeafe' },
+      { value: totalActive, label: 'Activos', icon: '✓', iconBg: '#d1fae5' }
+    ]"
+  />
 
-  <div class="admin-card admin-card--filters">
-    <div class="admin-filters">
-      <div class="admin-filters__search">
-        <span class="admin-filters__icon">🔍</span>
-        <input type="text" placeholder="Buscar por nombre o email..." [(ngModel)]="searchQuery" class="admin-filters__input" />
-      </div>
-      <select class="admin-filters__select" [(ngModel)]="filterRole">
-        <option value="all">Todos los roles</option>
-        <option value="admin">Administradores</option>
-        <option value="user">Usuarios</option>
-      </select>
-      <select class="admin-filters__select" [(ngModel)]="filterStatus">
-        <option value="all">Todos</option>
-        <option value="active">Activos</option>
-        <option value="inactive">Inactivos</option>
-      </select>
-    </div>
-  </div>
+  <app-admin-toolbar
+    searchPlaceholder="Buscar por nombre o email..."
+    [searchValue]="searchQuery"
+    (searchValueChange)="onSearchQueryChange($event)"
+  >
+    <select class="admin-select" [(ngModel)]="filterRole">
+      <option value="all">Todos los roles</option>
+      <option value="admin">Administradores</option>
+      <option value="user">Usuarios</option>
+    </select>
+    <select class="admin-select" [(ngModel)]="filterStatus">
+      <option value="all">Todos</option>
+      <option value="active">Activos</option>
+      <option value="inactive">Inactivos</option>
+    </select>
+  </app-admin-toolbar>
 
-  <div class="admin-card">
-    <div class="admin-card__head">
-      <h2 class="admin-card__title">{{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'usuario' : 'usuarios' }}</h2>
-    </div>
-    <div class="admin-card__body admin-card__body--table">
-      <table class="admin-table">
-        <thead>
+  <app-admin-table-shell
+    [tableTitle]="totalCount + (totalCount === 1 ? ' usuario' : ' usuarios')"
+    [loading]="loading"
+    [error]="error"
+  >
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Registrado</th>
+          <th class="admin-table__actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of filteredUsers; track user.id) {
           <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th>Registrado</th>
-            <th class="admin-table__actions">Acciones</th>
+            <td>
+              <div class="admin-table__product">
+                <span class="admin-users__avatar">{{ initials(user) }}</span>
+                <span class="admin-table__name">{{ fullName(user) }}</span>
+              </div>
+            </td>
+            <td class="admin-table__muted">{{ user.email }}</td>
+            <td>
+              <span class="admin-badge" [class.admin-badge--success]="user.role === 'Admin'">
+                {{ user.role === 'Admin' ? '🛡 Admin' : 'Usuario' }}
+              </span>
+            </td>
+            <td>
+              <span class="admin-badge" [class.admin-badge--success]="user.isActive">
+                {{ user.isActive ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="admin-table__muted">{{ user.createdDate | date:'d MMM y' }}</td>
+            <td class="admin-table__actions">
+              <app-admin-row-actions (edit)="openEdit(user)" (delete)="deleteUser(user)" />
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          @for (user of filteredUsers; track user.id) {
-            <tr>
-              <td class="admin-table__muted">{{ user.id }}</td>
-              <td>
-                <div class="admin-table__product">
-                  <span class="admin-users__avatar">{{ initials(user.name) }}</span>
-                  <span class="admin-table__name">{{ user.name }}</span>
-                </div>
-              </td>
-              <td class="admin-table__muted">{{ user.email }}</td>
-              <td>
-                <span class="admin-badge" [class.admin-badge--success]="user.role === 'admin'">
-                  {{ user.role === 'admin' ? '🛡 Admin' : 'Usuario' }}
-                </span>
-              </td>
-              <td>
-                <span class="admin-badge" [class.admin-badge--success]="user.isActive">
-                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="admin-table__muted">{{ user.createdAt | date:'d MMM y' }}</td>
-              <td class="admin-table__actions">
-                @if (user.role !== 'admin') {
-                  <button type="button" class="admin-btn admin-btn--outline" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" (click)="toggleStatus(user)">
-                    {{ user.isActive ? 'Desactivar' : 'Activar' }}
-                  </button>
-                } @else {
-                  <span class="admin-table__muted" style="font-size: 0.75rem;">Protegido</span>
-                }
-              </td>
-            </tr>
+        }
+        @if (filteredUsers.length === 0) {
+          <tr>
+            <td colspan="6" class="admin-table__empty">No se encontraron usuarios</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (totalPages > 1) {
+      <div class="admin-pagination">
+        <button type="button" class="admin-btn admin-btn--outline" [disabled]="pageNumber <= 1" (click)="goToPage(pageNumber - 1)">Anterior</button>
+        <span class="admin-table__muted">Página {{ pageNumber }} de {{ totalPages }}</span>
+        <button type="button" class="admin-btn admin-btn--outline" [disabled]="pageNumber >= totalPages" (click)="goToPage(pageNumber + 1)">Siguiente</button>
+      </div>
+    }
+  </app-admin-table-shell>
+
+  @if (dialogOpen && editingUser) {
+    <div class="admin-dialog-backdrop" (click)="closeDialog()">
+      <div class="admin-dialog" style="max-width: 28rem;" (click)="$event.stopPropagation()">
+        <div class="admin-dialog__head">
+          <h3 class="admin-dialog__title">Editar usuario</h3>
+          <p class="admin-dialog__desc">Modifica los datos del usuario. Nombre y email son obligatorios.</p>
+        </div>
+        <form (ngSubmit)="saveEdit()" class="admin-dialog__form">
+          @if (editFormError) {
+            <p class="admin-form-hint admin-form-hint--error">{{ editFormError }}</p>
           }
-          @if (filteredUsers.length === 0) {
-            <tr>
-              <td colspan="7" class="admin-table__empty">No se encontraron usuarios</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          <div class="admin-form-group">
+            <label for="edit-firstName">Nombre *</label>
+            <input id="edit-firstName" type="text" [(ngModel)]="editForm.firstName" name="firstName" required maxlength="100" class="admin-input" placeholder="Máx. 100 caracteres" />
+            @if (editFieldErrors['firstName']) {
+              <span class="admin-form-hint admin-form-hint--error">{{ editFieldErrors['firstName'] }}</span>
+            }
+          </div>
+          <div class="admin-form-group">
+            <label for="edit-lastName">Apellido</label>
+            <input id="edit-lastName" type="text" [(ngModel)]="editForm.lastName" name="lastName" maxlength="100" class="admin-input" placeholder="Opcional, máx. 100 caracteres" />
+            @if (editFieldErrors['lastName']) {
+              <span class="admin-form-hint admin-form-hint--error">{{ editFieldErrors['lastName'] }}</span>
+            }
+          </div>
+          <div class="admin-form-group">
+            <label for="edit-email">Email *</label>
+            <input id="edit-email" type="email" [(ngModel)]="editForm.email" name="email" required maxlength="200" class="admin-input" placeholder="ejemplo@correo.com" />
+            @if (editFieldErrors['email']) {
+              <span class="admin-form-hint admin-form-hint--error">{{ editFieldErrors['email'] }}</span>
+            }
+          </div>
+          <div class="admin-form-group">
+            <label for="edit-role">Rol</label>
+            <select id="edit-role" [(ngModel)]="editForm.role" name="role" class="admin-input">
+              <option value="User">Usuario</option>
+              <option value="Admin">Administrador</option>
+            </select>
+          </div>
+          <div class="admin-form-switch">
+            <div>
+              <label for="edit-isActive">Activo</label>
+              <p class="admin-form-hint">Los usuarios inactivos no pueden iniciar sesión</p>
+            </div>
+            <input id="edit-isActive" type="checkbox" [(ngModel)]="editForm.isActive" name="isActive" class="admin-checkbox" />
+          </div>
+          <div class="admin-dialog__actions">
+            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
+            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">{{ saving ? 'Guardando...' : 'Guardar' }}</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
+  }
 </div>

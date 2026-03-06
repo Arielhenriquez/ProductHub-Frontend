@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core';
 
 @Component({
   selector: 'app-admin-header',
@@ -8,4 +9,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './admin-header.component.html',
   styleUrl: './admin-header.component.scss',
 })
-export class AdminHeaderComponent {}
+export class AdminHeaderComponent {
+  readonly auth = inject(AuthService);
+}

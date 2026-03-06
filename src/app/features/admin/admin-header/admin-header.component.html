@@ -1,9 +1,17 @@
 <header class="admin-header">
   <div class="admin-header__inner">
-    <p class="admin-header__welcome">Bienvenido, Administrador</p>
-    <div class="admin-header__user">
-      <span class="admin-header__avatar">👤</span>
-      <span class="admin-header__name">Admin</span>
-    </div>
+    @if (auth.user$ | async; as user) {
+      <p class="admin-header__welcome">Bienvenido, {{ user.name }}</p>
+      <div class="admin-header__user">
+        <span class="admin-header__avatar">👤</span>
+        <span class="admin-header__name">{{ user.name }}</span>
+      </div>
+    } @else {
+      <p class="admin-header__welcome">Bienvenido</p>
+      <div class="admin-header__user">
+        <span class="admin-header__avatar">👤</span>
+        <span class="admin-header__name">Usuario</span>
+      </div>
+    }
   </div>
 </header>

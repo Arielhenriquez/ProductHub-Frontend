@@ -1,0 +1,18 @@
+<div class="admin-toolbar-card">
+  <div class="admin-toolbar">
+    <div class="admin-toolbar__search">
+      <span class="admin-toolbar__icon" aria-hidden="true">🔍</span>
+      <input
+        type="text"
+        class="admin-toolbar__input"
+        [placeholder]="searchPlaceholder()"
+        [ngModel]="searchValue()"
+        (ngModelChange)="searchValueChange.emit($event)"
+        (keyup.enter)="searchSubmit.emit()"
+      />
+    </div>
+    <div class="admin-toolbar__filters">
+      <ng-content />
+    </div>
+  </div>
+</div>

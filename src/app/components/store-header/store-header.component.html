@@ -14,22 +14,28 @@
       <nav class="store-header__nav">
         <a routerLink="/" routerLinkActive="store-header__nav--active" [routerLinkActiveOptions]="{ exact: true }" class="store-header__nav-link">Inicio</a>
         <a routerLink="/products" routerLinkActive="store-header__nav--active" class="store-header__nav-link">Productos</a>
-        <a routerLink="/admin/dashboard" routerLinkActive="store-header__nav--active" class="store-header__nav-link store-header__nav-link--admin">
-          <span class="store-header__nav-icon" aria-hidden="true">🛡</span>
-          Panel Admin
-        </a>
+        @if (auth.user$ | async; as u) {
+          @if (u.role === 'Admin') {
+            <a routerLink="/admin/dashboard" routerLinkActive="store-header__nav--active" class="store-header__nav-link store-header__nav-link--admin">
+              <span class="store-header__nav-icon" aria-hidden="true">🛡</span>
+              Panel Admin
+            </a>
+          }
+        }
       </nav>
 
-      @if (isLoggedIn) {
+      @if (auth.user$ | async; as user) {
         <div class="store-header__menu">
-          <button type="button" class="store-header__btn store-header__btn--icon" aria-label="Mi cuenta">👤</button>
-          <div class="store-header__dropdown">
-            <a routerLink="/account" class="store-header__dropdown-item" (click)="closeMobile()">Mi Cuenta</a>
-            <button type="button" class="store-header__dropdown-item">Cerrar Sesión</button>
-          </div>
+          <button type="button" class="store-header__btn store-header__btn--icon" aria-label="Mi cuenta" aria-expanded="dropdownOpen" (click)="toggleDropdown()">👤 {{ user.name }}</button>
+          @if (dropdownOpen) {
+            <div class="store-header__dropdown">
+              <span class="store-header__dropdown-item store-header__dropdown-item--muted">{{ user.email }} · {{ user.role }}</span>
+              <button type="button" class="store-header__dropdown-item" (click)="logout()">Cerrar sesión</button>
+            </div>
+          }
         </div>
       } @else {
-        <a routerLink="/login" class="store-header__link store-header__link--ghost" (click)="closeMobile()">Iniciar Sesión</a>
+        <a routerLink="/login" class="store-header__link store-header__link--ghost" (click)="closeMobile()">Iniciar sesión</a>
         <a routerLink="/register" (click)="closeMobile()"><button type="button" class="store-header__btn store-header__btn--primary">Registrarse</button></a>
       }
       <button type="button" class="store-header__btn store-header__btn--icon store-header__mobile-menu" aria-label="Menú" (click)="toggleMobile()">
@@ -43,11 +49,15 @@
       <nav class="store-header__mobile-nav">
         <a routerLink="/" (click)="closeMobile()" class="store-header__mobile-link">Inicio</a>
         <a routerLink="/products" (click)="closeMobile()" class="store-header__mobile-link">Productos</a>
-        <a routerLink="/admin/dashboard" (click)="closeMobile()" class="store-header__mobile-link store-header__mobile-link--admin">
-          <span aria-hidden="true">🛡</span> Panel Admin
-        </a>
+        @if (auth.user$ | async; as u) {
+          @if (u.role === 'Admin') {
+            <a routerLink="/admin/dashboard" (click)="closeMobile()" class="store-header__mobile-link store-header__mobile-link--admin">
+              <span aria-hidden="true">🛡</span> Panel Admin
+            </a>
+          }
+        }
         <div class="store-header__mobile-divider"></div>
-        <a routerLink="/login" (click)="closeMobile()" class="store-header__mobile-link">Iniciar Sesión</a>
+        <a routerLink="/login" (click)="closeMobile()" class="store-header__mobile-link">Iniciar sesión</a>
         <a routerLink="/register" (click)="closeMobile()"><button type="button" class="store-header__btn store-header__btn--primary store-header__mobile-btn">Registrarse</button></a>
       </nav>
     </div>
