@@ -11,6 +11,10 @@ import type {
   LoginResponse,
   RegisterDto,
   RegisterResponse,
+  ForgotPasswordDto,
+  ForgotPasswordResponse,
+  ResetPasswordDto,
+  ResetPasswordResponse,
   ApiErrorBody,
 } from '../../types/auth.types';
 
@@ -96,6 +100,32 @@ export class AuthService {
         const body = (err.error || {}) as ApiErrorBody;
         const errors = parseValidationErrors(body);
         const message = body.error ?? body.message ?? err.statusText ?? 'Error al iniciar sesión';
+        return of({ success: false as const, error: message, errors: errors.length ? errors : undefined });
+      })
+    );
+  }
+
+  /** POST /Auth/forgot-password. Requests a password reset email. */
+  forgotPassword(dto: ForgotPasswordDto): Observable<AuthResult<ForgotPasswordResponse>> {
+    return this.http.post<ForgotPasswordResponse>(`${AUTH_URL}/forgot-password`, dto).pipe(
+      map((res) => ({ success: true as const, data: res })),
+      catchError((err) => {
+        const body = (err.error || {}) as ApiErrorBody;
+        const errors = parseValidationErrors(body);
+        const message = body.error ?? body.message ?? err.statusText ?? 'Error al enviar el enlace';
+        return of({ success: false as const, error: message, errors: errors.length ? errors : undefined });
+      })
+    );
+  }
+
+  /** POST /Auth/reset-password. Resets the password using a token. */
+  resetPassword(dto: ResetPasswordDto): Observable<AuthResult<ResetPasswordResponse>> {
+    return this.http.post<ResetPasswordResponse>(`${AUTH_URL}/reset-password`, dto).pipe(
+      map((res) => ({ success: true as const, data: res })),
+      catchError((err) => {
+        const body = (err.error || {}) as ApiErrorBody;
+        const errors = parseValidationErrors(body);
+        const message = body.error ?? body.message ?? err.statusText ?? 'Error al restablecer la contraseña';
         return of({ success: false as const, error: message, errors: errors.length ? errors : undefined });
       })
     );

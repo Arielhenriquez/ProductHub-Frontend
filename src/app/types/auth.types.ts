@@ -62,3 +62,21 @@ export interface ApiErrorBody {
   error?: string;
   message?: string;
 }
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
