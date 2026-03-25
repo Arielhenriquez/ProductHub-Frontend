@@ -57,8 +57,12 @@
           }
         }
         <div class="store-header__mobile-divider"></div>
-        <a routerLink="/login" (click)="closeMobile()" class="store-header__mobile-link">Iniciar sesión</a>
-        <a routerLink="/register" (click)="closeMobile()"><button type="button" class="store-header__btn store-header__btn--primary store-header__mobile-btn">Registrarse</button></a>
+        @if (auth.user$ | async) {
+          <button type="button" class="store-header__btn store-header__btn--primary store-header__mobile-btn" (click)="logout(); closeMobile()">Cerrar sesión</button>
+        } @else {
+          <a routerLink="/login" (click)="closeMobile()" class="store-header__mobile-link">Iniciar sesión</a>
+          <a routerLink="/register" (click)="closeMobile()"><button type="button" class="store-header__btn store-header__btn--primary store-header__mobile-btn">Registrarse</button></a>
+        }
       </nav>
     </div>
   }
