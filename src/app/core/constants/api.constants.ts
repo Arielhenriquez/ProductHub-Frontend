@@ -2,19 +2,13 @@
  * ProductHub API configuration (ASP.NET Core REST API, JWT).
  * Token and user are stored in localStorage.
  */
-const PORT = 7133;
-const USE_HTTPS = true;
+export const BASE_URL = 'https://producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io/api';
 
 export const API_CONFIG = {
-  PORT,
-  USE_HTTPS,
   get BASE_URL(): string {
-    return `${USE_HTTPS ? 'https' : 'http'}://localhost:${this.PORT}/api`;
+    return BASE_URL;
   },
 } as const;
-
-/** Base URL for ProductHub API. */
-export const BASE_URL = `${USE_HTTPS ? 'https' : 'http'}://localhost:${PORT}/api`;
 
 export const AUTH_STORAGE_KEY = 'producthub_accessToken';
 export const USER_STORAGE_KEY = 'producthub_user';
