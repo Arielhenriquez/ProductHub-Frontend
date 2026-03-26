@@ -69,27 +69,28 @@
   </app-admin-table-shell>
 
   @if (dialogOpen) {
-    <div class="admin-dialog-backdrop" (click)="closeDialog()">
-      <div class="admin-dialog admin-dialog--narrow" (click)="$event.stopPropagation()">
-        <div class="admin-dialog__head">
-          <h3 class="admin-dialog__title">{{ editingCategory ? 'Editar Categoría' : 'Agregar Nueva Categoría' }}</h3>
-          <p class="admin-dialog__desc">{{ editingCategory ? 'Modifica los datos y guarda.' : 'Completa los datos.' }}</p>
+    <app-modal
+      [title]="editingCategory ? 'Editar Categoría' : 'Agregar Categoría'"
+      [subtitle]="editingCategory ? 'Modifica los datos y guarda.' : 'Completa los datos de la categoría.'"
+      size="sm"
+      (close)="closeDialog()"
+    >
+      <form (ngSubmit)="submit()" class="modal-form">
+        <div class="modal-field">
+          <label class="modal-field__label" for="cat-name">Nombre *</label>
+          <input id="cat-name" type="text" [(ngModel)]="form.name" name="name" required placeholder="Ej: Electrónica" class="modal-field__input" />
         </div>
-        <form (ngSubmit)="submit()" class="admin-dialog__form">
-          <div class="admin-form-group">
-            <label for="cat-name">Nombre *</label>
-            <input id="cat-name" type="text" [(ngModel)]="form.name" name="name" required placeholder="Ej: Electrónica" class="admin-input" />
-          </div>
-          <div class="admin-form-group">
-            <label for="cat-desc">Descripción</label>
-            <textarea id="cat-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Breve descripción" class="admin-input admin-input--textarea"></textarea>
-          </div>
-          <div class="admin-dialog__actions">
-            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
-            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">{{ editingCategory ? 'Guardar Cambios' : 'Crear Categoría' }}</button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div class="modal-field">
+          <label class="modal-field__label" for="cat-desc">Descripción</label>
+          <textarea id="cat-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Breve descripción (opcional)" class="modal-field__input modal-field__input--textarea"></textarea>
+        </div>
+        <div class="modal-footer" data-modal-footer>
+          <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
+          <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">
+            {{ editingCategory ? 'Guardar Cambios' : 'Crear Categoría' }}
+          </button>
+        </div>
+      </form>
+    </app-modal>
   }
 </div>

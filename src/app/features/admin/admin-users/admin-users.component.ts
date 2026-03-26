@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { UsersService } from '../../../core';
 import type { UserResponseDto, UpdateUserDto } from '../../../types/auth.types';
 import {
@@ -10,6 +11,7 @@ import {
   AdminTableShellComponent,
   AdminRowActionsComponent,
 } from '../../../shared/components/admin';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
 
 const EMAIL_MAX = 200;
 const FIRST_NAME_MAX = 100;
@@ -28,6 +30,7 @@ const SEARCH_DEBOUNCE_MS = 300;
     AdminToolbarComponent,
     AdminTableShellComponent,
     AdminRowActionsComponent,
+    ModalComponent,
   ],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.scss',
@@ -110,7 +113,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.loading = false;
         this.users = res.data?.items ?? [];
-        this.totalCount = res.data?.totalCount ?? 0;
+        this.totalCount = res.data?.totalRecords ?? res.data?.totalCount ?? this.users.length;
         this.pageNumber = res.data?.pageNumber ?? this.pageNumber;
         this.pageSize = res.data?.pageSize ?? this.pageSize;
       },
@@ -209,15 +212,28 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
   }
 
   deleteUser(user: UserResponseDto): void {
-    if (!confirm(`¿Eliminar a ${user.firstName} ${user.lastName || ''}?`)) return;
-    this.usersService.deleteUser(user.id).subscribe({
-      next: () => {
-        this.users = this.users.filter((u) => u.id !== user.id);
-        this.totalCount = Math.max(0, this.totalCount - 1);
-      },
-      error: (err) => {
-        this.error = err.error?.error ?? err.message ?? 'Error al eliminar';
-      },
+    const name = [user.firstName, user.lastName].filter(Boolean).join(' ');
+    Swal.fire({
+      title: '¿Eliminar usuario?',
+      text: `"${name}" será eliminado permanentemente.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      this.usersService.deleteUser(user.id).subscribe({
+        next: () => {
+          this.users = this.users.filter((u) => u.id !== user.id);
+          this.totalCount = Math.max(0, this.totalCount - 1);
+          Swal.fire({ title: 'Eliminado', text: 'El usuario fue eliminado.', icon: 'success', timer: 1800, showConfirmButton: false });
+        },
+        error: (err) => {
+          this.error = err.error?.error ?? err.message ?? 'Error al eliminar';
+        },
+      });
     });
   }
 

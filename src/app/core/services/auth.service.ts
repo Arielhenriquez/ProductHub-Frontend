@@ -99,7 +99,7 @@ export class AuthService {
       catchError((err) => {
         const body = (err.error || {}) as ApiErrorBody;
         const errors = parseValidationErrors(body);
-        const message = body.error ?? body.message ?? err.statusText ?? 'Error al iniciar sesión';
+        const message = body.data?.message ?? body.error ?? body.message ?? err.statusText ?? 'Error al iniciar sesión';
         return of({ success: false as const, error: message, errors: errors.length ? errors : undefined });
       })
     );

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { ProductsService, CategoriesService, ProductImagesService } from '../../../core';
 import type { ProductListItem, Product, Category, CreateProductDto } from '../../../types';
 import {
@@ -10,6 +11,7 @@ import {
   AdminTableShellComponent,
   AdminRowActionsComponent,
 } from '../../../shared/components/admin';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
 
 const MAX_IMAGE_FILES = 5;
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -43,6 +45,7 @@ function validateImageFiles(files: File[]): string | null {
     AdminToolbarComponent,
     AdminTableShellComponent,
     AdminRowActionsComponent,
+    ModalComponent,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
@@ -357,7 +360,7 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
                 this.uploadingImages = false;
                 this.loadProducts(() => this.closeDialog());
               },
-              error: (err) => {
+              error: () => {
                 this.saving = false;
                 this.uploadingImages = false;
                 this.loading = false;
@@ -380,11 +383,25 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
   }
 
   deleteProduct(p: ProductListItem): void {
-    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
-    this.loading = true;
-    this.productsService.delete(p.id).subscribe({
-      next: () => this.loadProducts(),
-      error: () => (this.loading = false),
+    Swal.fire({
+      title: '¿Eliminar producto?',
+      text: `"${p.name}" será eliminado permanentemente.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      this.loading = true;
+      this.productsService.delete(p.id).subscribe({
+        next: () => {
+          this.loadProducts();
+          Swal.fire({ title: 'Eliminado', text: 'El producto fue eliminado.', icon: 'success', timer: 1800, showConfirmButton: false });
+        },
+        error: () => (this.loading = false),
+      });
     });
   }
 

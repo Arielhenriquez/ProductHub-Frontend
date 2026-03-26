@@ -1,5 +1,6 @@
 @use '../../../shared/components/admin/admin-shared';
 
+/* ── Avatar ── */
 .admin-users__avatar {
   display: flex;
   align-items: center;
@@ -11,104 +12,149 @@
   color: #2563eb;
   font-size: 0.75rem;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
-.admin-dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.5);
+/* ── Generic modal form styles ── */
+.modal-form {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  overflow-y: auto;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.admin-dialog {
-  background: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  max-width: 42rem;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.admin-dialog__head {
-  padding: 1.5rem 1.5rem 0;
-}
-
-.admin-dialog__title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.admin-dialog__desc {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0.25rem 0 0;
-}
-
-.admin-dialog__form {
-  padding: 1.5rem;
-}
-
-.admin-dialog__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 1rem;
-}
-
-.admin-form-group {
-  margin-bottom: 1rem;
-}
-
-.admin-form-group label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
-}
-
-.admin-input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-}
-
-.admin-form-hint {
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin: 0.25rem 0 0;
-  display: block;
-}
-
-.admin-form-hint--error {
+.modal-form__error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   color: #dc2626;
-  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
 }
 
-.admin-form-switch {
+.modal-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+.modal-field__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.modal-field__input {
+  width: 100%;
+  padding: 0.5625rem 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #0f172a;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  &--error {
+    border-color: #f87171;
+    &:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12); }
+  }
+
+  &--select { cursor: pointer; }
+}
+
+.modal-field__hint {
+  font-size: 0.75rem;
+  color: #64748b;
+  &--error { color: #dc2626; }
+}
+
+/* ── Toggle switch ── */
+.modal-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+}
 
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
+.modal-toggle__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.modal-toggle__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.modal-toggle__hint {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* pill toggle */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+  &__track {
+    width: 2.75rem;
+    height: 1.5rem;
+    background: #cbd5e1;
+    border-radius: 9999px;
+    transition: background 0.2s;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 1.125rem;
+      height: 1.125rem;
+      background: #fff;
+      border-radius: 9999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+  }
+
+  input:checked + &__track {
+    background: #2563eb;
+    &::after { transform: translateX(1.25rem); }
   }
 }
 
-.admin-checkbox {
-  width: 1.25rem;
-  height: 1.25rem;
+/* ── Modal footer (projected into app-modal) ── */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 0.25rem;
 }

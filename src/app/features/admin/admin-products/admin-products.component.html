@@ -93,132 +93,132 @@
   </app-admin-table-shell>
 
   @if (dialogOpen) {
-    <div class="admin-dialog-backdrop" (click)="closeDialog()">
-      <div class="admin-dialog" (click)="$event.stopPropagation()">
-        <div class="admin-dialog__head">
-          <h3 class="admin-dialog__title">{{ editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto' }}</h3>
-          <p class="admin-dialog__desc">
-            {{ editingProduct ? 'Modifica los datos y guarda.' : 'Completa los datos del producto.' }}
-          </p>
+    <app-modal
+      [title]="editingProduct ? 'Editar Producto' : 'Agregar Producto'"
+      [subtitle]="editingProduct ? 'Modifica los datos y guarda.' : 'Completa los datos del producto.'"
+      size="lg"
+      (close)="closeDialog()"
+    >
+      <form (ngSubmit)="submit()" class="modal-form">
+
+        <div class="modal-field">
+          <label class="modal-field__label" for="product-name">Nombre del producto *</label>
+          <input id="product-name" type="text" [(ngModel)]="form.name" name="name" required maxlength="200" placeholder="Ej: Audífonos Bluetooth" class="modal-field__input" />
         </div>
-        <form (ngSubmit)="submit()" class="admin-dialog__form">
-          <div class="admin-form-group">
-            <label for="product-name">Nombre del producto *</label>
-            <input id="product-name" type="text" [(ngModel)]="form.name" name="name" required maxlength="200" placeholder="Ej: Audífonos Bluetooth" class="admin-input" />
+
+        <div class="modal-field">
+          <label class="modal-field__label" for="product-desc">Descripción</label>
+          <textarea id="product-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Descripción (opcional)" class="modal-field__input modal-field__input--textarea"></textarea>
+        </div>
+
+        <div class="modal-form__row">
+          <div class="modal-field">
+            <label class="modal-field__label" for="product-price">Precio</label>
+            <input id="product-price" type="number" [(ngModel)]="form.price" name="price" step="0.01" min="0" placeholder="0.00" class="modal-field__input" />
+            <span class="modal-field__hint">Dejar vacío si es a negociar</span>
           </div>
-          <div class="admin-form-group">
-            <label for="product-desc">Descripción</label>
-            <textarea id="product-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Descripción (opcional)" class="admin-input admin-input--textarea"></textarea>
+          <div class="modal-field">
+            <label class="modal-field__label" for="product-cat">Categoría *</label>
+            <select id="product-cat" [(ngModel)]="form.categoryId" name="categoryId" required class="modal-field__input modal-field__input--select">
+              <option value="">Seleccionar categoría</option>
+              @for (cat of categories; track cat.id) {
+                <option [value]="cat.id">{{ cat.name }}</option>
+              }
+            </select>
           </div>
-          <div class="admin-form-row">
-            <div class="admin-form-group">
-              <label for="product-price">Precio</label>
-              <input id="product-price" type="number" [(ngModel)]="form.price" name="price" step="0.01" min="0" placeholder="0.00" class="admin-input" />
-              <span class="admin-form-hint">Dejar vacío si es a negociar</span>
-            </div>
-            <div class="admin-form-group">
-              <label for="product-cat">Categoría *</label>
-              <select id="product-cat" [(ngModel)]="form.categoryId" name="categoryId" required class="admin-input">
-                <option value="">Seleccionar categoría</option>
-                @for (cat of categories; track cat.id) {
-                  <option [value]="cat.id">{{ cat.name }}</option>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-field__label" for="product-stock">Cantidad en stock</label>
+          <input id="product-stock" type="number" [(ngModel)]="form.quantityInStock" name="quantityInStock" min="0" class="modal-field__input" />
+        </div>
+
+        <div class="modal-toggle">
+          <div class="modal-toggle__text">
+            <span class="modal-toggle__label">Producto activo</span>
+            <span class="modal-toggle__hint">Solo los productos activos son visibles para clientes</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="form.isActive" name="isActive" />
+            <span class="toggle-switch__track"></span>
+          </label>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-field__label">Imágenes</label>
+          @if (!editingProduct) {
+            <label class="file-upload-area">
+              <input type="file" multiple accept="image/*" (change)="onFilesSelected($event)" />
+              <div class="file-upload-area__inner">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Seleccionar imágenes</span>
+                <span class="file-upload-area__hint">Máx. {{ maxImageFiles }} imágenes · 5 MB · JPEG PNG WebP</span>
+              </div>
+            </label>
+            @if (pendingFiles.length) {
+              <div class="admin-image-previews">
+                @for (f of pendingFiles; track f.name + $index; let i = $index) {
+                  <div class="admin-image-preview">
+                    <img [src]="pendingPreviewUrls[i]" [alt]="f.name" />
+                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingFile(i)" title="Quitar">×</button>
+                  </div>
                 }
-              </select>
-            </div>
-          </div>
-          <div class="admin-form-group">
-            <label for="product-stock">Cantidad en stock</label>
-            <input id="product-stock" type="number" [(ngModel)]="form.quantityInStock" name="quantityInStock" min="0" class="admin-input" />
-          </div>
-          <div class="admin-form-switch">
-            <div>
-              <label for="product-active">Estado activo</label>
-              <p class="admin-form-hint">Solo los productos activos son visibles para clientes</p>
-            </div>
-            <input id="product-active" type="checkbox" [(ngModel)]="form.isActive" name="isActive" class="admin-checkbox" />
-          </div>
-
-          <div class="admin-form-group">
-            <label>Imágenes</label>
-            @if (!editingProduct) {
-              <p class="admin-form-hint">Opcional. Máximo {{ maxImageFiles }} imágenes, 5 MB cada una (JPEG, PNG, GIF, WebP).</p>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                (change)="onFilesSelected($event)"
-                class="admin-input admin-input--file"
-              />
-              @if (pendingFiles.length) {
-                <div class="admin-image-previews">
-                  @for (f of pendingFiles; track f.name + $index; let i = $index) {
-                    <div class="admin-image-preview">
-                      <img [src]="pendingPreviewUrls[i]" [alt]="f.name" />
-                      <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingFile(i)" title="Quitar">×</button>
-                    </div>
-                  }
-                </div>
-              }
-            } @else {
-              @if (productDetail?.images?.length) {
-                <p class="admin-form-hint">Imágenes actuales. Puedes eliminar o marcar una como principal.</p>
-                <div class="admin-image-previews">
-                  @for (img of productDetail!.images; track img.id) {
-                    <div class="admin-image-preview">
-                      <img [src]="img.url" [alt]="'Imagen ' + img.id" />
-                      <div class="admin-image-preview__actions">
-                        @if (img.isMain) {
-                          <span class="admin-image-preview__badge">Principal</span>
-                        } @else {
-                          <button type="button" class="admin-btn admin-btn--outline admin-btn--sm" (click)="setMainImage(img.id)">Hacer principal</button>
-                        }
-                        <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteImage(img.id)" title="Eliminar">🗑</button>
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
-              @if ((productDetail?.images?.length ?? 0) + pendingNewFiles.length < maxImageFiles) {
-                <p class="admin-form-hint">Añadir más imágenes (máx. {{ maxImageFiles }} en total, 5 MB cada una).</p>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  (change)="onNewFilesSelected($event)"
-                  class="admin-input admin-input--file"
-                />
-              }
-              @if (pendingNewFiles.length) {
-                <div class="admin-image-previews">
-                  @for (f of pendingNewFiles; track f.name + $index; let i = $index) {
-                    <div class="admin-image-preview">
-                      <img [src]="pendingNewPreviewUrls[i]" [alt]="f.name" />
-                      <span class="admin-image-preview__badge admin-image-preview__badge--new">Nueva</span>
-                      <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingNewFile(i)" title="Quitar">×</button>
-                    </div>
-                  }
-                </div>
-              }
+              </div>
             }
-            @if (imageError) {
-              <p class="admin-form-hint admin-form-hint--error">{{ imageError }}</p>
+          } @else {
+            @if (productDetail?.images?.length) {
+              <div class="admin-image-previews">
+                @for (img of productDetail!.images; track img.id) {
+                  <div class="admin-image-preview">
+                    <img [src]="img.url" [alt]="'Imagen ' + img.id" />
+                    <div class="admin-image-preview__actions">
+                      @if (img.isMain) {
+                        <span class="admin-image-preview__badge">Principal</span>
+                      } @else {
+                        <button type="button" class="admin-btn admin-btn--outline admin-btn--sm" (click)="setMainImage(img.id)">Hacer principal</button>
+                      }
+                      <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteImage(img.id)" title="Eliminar">🗑</button>
+                    </div>
+                  </div>
+                }
+              </div>
             }
-          </div>
+            @if ((productDetail?.images?.length ?? 0) + pendingNewFiles.length < maxImageFiles) {
+              <label class="file-upload-area">
+                <input type="file" multiple accept="image/*" (change)="onNewFilesSelected($event)" />
+                <div class="file-upload-area__inner">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Añadir más imágenes</span>
+                  <span class="file-upload-area__hint">Máx. {{ maxImageFiles }} en total · 5 MB cada una</span>
+                </div>
+              </label>
+            }
+            @if (pendingNewFiles.length) {
+              <div class="admin-image-previews">
+                @for (f of pendingNewFiles; track f.name + $index; let i = $index) {
+                  <div class="admin-image-preview">
+                    <img [src]="pendingNewPreviewUrls[i]" [alt]="f.name" />
+                    <span class="admin-image-preview__badge admin-image-preview__badge--new">Nueva</span>
+                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingNewFile(i)" title="Quitar">×</button>
+                  </div>
+                }
+              </div>
+            }
+          }
+          @if (imageError) {
+            <p class="modal-field__hint modal-field__hint--error">{{ imageError }}</p>
+          }
+        </div>
 
-          <div class="admin-dialog__actions">
-            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()" [disabled]="saving || uploadingImages">Cancelar</button>
-            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving || uploadingImages">
-              @if (uploadingImages) {
-                Subiendo imágenes...
-              } @else if (saving) {
-                {{ editingProduct ? 'Guardando...' : 'Creando producto...' }}
-              } @else {
-                {{ editingProduct ? 'Guardar Cambios' : 'Agregar Producto' }}
-              }
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div class="modal-footer" data-modal-footer>
+          <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()" [disabled]="saving || uploadingImages">Cancelar</button>
+          <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving || uploadingImages">
+            @if (uploadingImages) { Subiendo imágenes... }
+            @else if (saving) { {{ editingProduct ? 'Guardando...' : 'Creando...' }} }
+            @else { {{ editingProduct ? 'Guardar Cambios' : 'Agregar Producto' }} }
+          </button>
+        </div>
+      </form>
+    </app-modal>
   }
 </div>

@@ -88,57 +88,70 @@
   </app-admin-table-shell>
 
   @if (dialogOpen && editingUser) {
-    <div class="admin-dialog-backdrop" (click)="closeDialog()">
-      <div class="admin-dialog" style="max-width: 28rem;" (click)="$event.stopPropagation()">
-        <div class="admin-dialog__head">
-          <h3 class="admin-dialog__title">Editar usuario</h3>
-          <p class="admin-dialog__desc">Modifica los datos del usuario. Nombre y email son obligatorios.</p>
-        </div>
-        <form (ngSubmit)="saveEdit()" class="admin-dialog__form">
-          @if (editFormError) {
-            <p class="admin-form-hint admin-form-hint--error">{{ editFormError }}</p>
-          }
-          <div class="admin-form-group">
-            <label for="edit-firstName">Nombre *</label>
-            <input id="edit-firstName" type="text" [(ngModel)]="editForm.firstName" name="firstName" required maxlength="100" class="admin-input" placeholder="Máx. 100 caracteres" />
+    <app-modal
+      title="Editar usuario"
+      subtitle="Nombre y email son obligatorios."
+      size="sm"
+      (close)="closeDialog()"
+    >
+      <form (ngSubmit)="saveEdit()" class="modal-form">
+        @if (editFormError) {
+          <div class="modal-form__error">{{ editFormError }}</div>
+        }
+
+        <div class="modal-form__row">
+          <div class="modal-field">
+            <label class="modal-field__label" for="edit-firstName">Nombre *</label>
+            <input id="edit-firstName" type="text" [(ngModel)]="editForm.firstName" name="firstName"
+              required maxlength="100" placeholder="Nombre" class="modal-field__input"
+              [class.modal-field__input--error]="editFieldErrors['firstName']" />
             @if (editFieldErrors['firstName']) {
-              <span class="admin-form-hint admin-form-hint--error">{{ editFieldErrors['firstName'] }}</span>
+              <span class="modal-field__hint modal-field__hint--error">{{ editFieldErrors['firstName'] }}</span>
             }
           </div>
-          <div class="admin-form-group">
-            <label for="edit-lastName">Apellido</label>
-            <input id="edit-lastName" type="text" [(ngModel)]="editForm.lastName" name="lastName" maxlength="100" class="admin-input" placeholder="Opcional, máx. 100 caracteres" />
-            @if (editFieldErrors['lastName']) {
-              <span class="admin-form-hint admin-form-hint--error">{{ editFieldErrors['lastName'] }}</span>
-            }
+          <div class="modal-field">
+            <label class="modal-field__label" for="edit-lastName">Apellido</label>
+            <input id="edit-lastName" type="text" [(ngModel)]="editForm.lastName" name="lastName"
+              maxlength="100" placeholder="Apellido (opcional)" class="modal-field__input" />
           </div>
-          <div class="admin-form-group">
-            <label for="edit-email">Email *</label>
-            <input id="edit-email" type="email" [(ngModel)]="editForm.email" name="email" required maxlength="200" class="admin-input" placeholder="ejemplo@correo.com" />
-            @if (editFieldErrors['email']) {
-              <span class="admin-form-hint admin-form-hint--error">{{ editFieldErrors['email'] }}</span>
-            }
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-field__label" for="edit-email">Email *</label>
+          <input id="edit-email" type="email" [(ngModel)]="editForm.email" name="email"
+            required maxlength="200" placeholder="correo@ejemplo.com" class="modal-field__input"
+            [class.modal-field__input--error]="editFieldErrors['email']" />
+          @if (editFieldErrors['email']) {
+            <span class="modal-field__hint modal-field__hint--error">{{ editFieldErrors['email'] }}</span>
+          }
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-field__label" for="edit-role">Rol</label>
+          <select id="edit-role" [(ngModel)]="editForm.role" name="role" class="modal-field__input modal-field__input--select">
+            <option value="User">Usuario</option>
+            <option value="Admin">Administrador</option>
+          </select>
+        </div>
+
+        <div class="modal-toggle">
+          <div class="modal-toggle__text">
+            <span class="modal-toggle__label">Cuenta activa</span>
+            <span class="modal-toggle__hint">Los usuarios inactivos no pueden iniciar sesión</span>
           </div>
-          <div class="admin-form-group">
-            <label for="edit-role">Rol</label>
-            <select id="edit-role" [(ngModel)]="editForm.role" name="role" class="admin-input">
-              <option value="User">Usuario</option>
-              <option value="Admin">Administrador</option>
-            </select>
-          </div>
-          <div class="admin-form-switch">
-            <div>
-              <label for="edit-isActive">Activo</label>
-              <p class="admin-form-hint">Los usuarios inactivos no pueden iniciar sesión</p>
-            </div>
-            <input id="edit-isActive" type="checkbox" [(ngModel)]="editForm.isActive" name="isActive" class="admin-checkbox" />
-          </div>
-          <div class="admin-dialog__actions">
-            <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
-            <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">{{ saving ? 'Guardando...' : 'Guardar' }}</button>
-          </div>
-        </form>
-      </div>
-    </div>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="editForm.isActive" name="isActive" />
+            <span class="toggle-switch__track"></span>
+          </label>
+        </div>
+
+        <div class="modal-footer" data-modal-footer>
+          <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
+          <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">
+            {{ saving ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </app-modal>
   }
 </div>
