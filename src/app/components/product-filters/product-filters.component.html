@@ -1,44 +1,83 @@
-<div class="product-filters">
-  <div class="product-filters__header">
-    <h3 class="product-filters__title">Filtros</h3>
-    <button type="button" class="product-filters__clear" (click)="clearFilters()">Limpiar</button>
+<div class="filters">
+
+  <!-- Header -->
+  <div class="filters__header">
+    <div class="filters__header-left">
+      <svg class="filters__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+      </svg>
+      <span class="filters__title">Filtros</span>
+    </div>
+    @if (search() || selectedCategoryIds().length) {
+      <button type="button" class="filters__clear" (click)="clearFilters()">
+        Limpiar
+      </button>
+    }
   </div>
-  <div class="product-filters__body">
-    <div class="product-filters__group">
-      <h4 class="product-filters__label">Buscar</h4>
+
+  <!-- Search -->
+  <div class="filters__section">
+    <p class="filters__section-label">Buscar</p>
+    <div class="filters__search-wrap">
+      <svg class="filters__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
       <input
         type="text"
-        class="product-filters__search"
+        class="filters__search"
         [value]="search()"
         (input)="onSearchInput($any($event.target).value)"
         placeholder="Nombre del producto…"
       />
     </div>
-    <div class="product-filters__group">
-      <h4 class="product-filters__label">Categorías</h4>
-      @for (category of categoryList; track category.id) {
-        <label class="product-filters__checkbox">
-          <input
-            type="checkbox"
-            [checked]="isCategorySelected(category.id)"
-            (change)="toggleCategory(category.id)"
-          />
-          <span>{{ category.name }}</span>
-        </label>
-      }
-      @if (categoryList.length === 0) {
-        <p class="product-filters__empty">No hay categorías</p>
-      }
-    </div>
-    <div class="product-filters__group">
-      <h4 class="product-filters__label">Precio máximo</h4>
-      <div class="product-filters__range">
-        <input type="range" min="0" max="1000" step="10" [(ngModel)]="priceMax" />
-        <div class="product-filters__range-labels">
-          <span>$0</span>
-          <span>${{ priceMax }}</span>
-        </div>
+  </div>
+
+  <div class="filters__divider"></div>
+
+  <!-- Categories -->
+  <div class="filters__section">
+    <p class="filters__section-label">Categorías</p>
+    @if (categoryList.length === 0) {
+      <p class="filters__empty">Sin categorías</p>
+    } @else {
+      <div class="filters__categories">
+        @for (category of categoryList; track category.id) {
+          <label class="filters__chip" [class.filters__chip--active]="isCategorySelected(category.id)">
+            <input
+              type="checkbox"
+              [checked]="isCategorySelected(category.id)"
+              (change)="toggleCategory(category.id)"
+            />
+            <span>{{ category.name }}</span>
+            @if (isCategorySelected(category.id)) {
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            }
+          </label>
+        }
       </div>
+    }
+  </div>
+
+  <div class="filters__divider"></div>
+
+  <!-- Price -->
+  <div class="filters__section">
+    <div class="filters__price-header">
+      <p class="filters__section-label">Precio máximo</p>
+      <span class="filters__price-value">${{ priceMax }}</span>
+    </div>
+    <input
+      class="filters__range"
+      type="range"
+      min="0"
+      max="1000"
+      step="10"
+      [(ngModel)]="priceMax"
+    />
+    <div class="filters__range-labels">
+      <span>$0</span>
+      <span>$1000</span>
     </div>
   </div>
+
 </div>

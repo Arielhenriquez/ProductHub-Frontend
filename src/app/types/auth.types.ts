@@ -61,6 +61,8 @@ export interface RegisterResponse {
 export interface ApiErrorBody {
   error?: string;
   message?: string;
+  /** Backend wraps the real error detail inside data.message */
+  data?: { message?: string };
 }
 
 export interface ForgotPasswordDto {

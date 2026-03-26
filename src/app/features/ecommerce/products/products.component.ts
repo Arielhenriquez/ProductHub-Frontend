@@ -44,7 +44,7 @@ export class ProductsComponent implements OnInit {
     this.route.queryParams.subscribe((qp) => {
       this.pageNumber = Math.max(1, Number(qp['page']) || 1);
       this.search = (qp['search'] as string) ?? '';
-      this.selectedCategoryIds = qp['category'] ? [qp['category']] : [];
+      this.selectedCategoryIds = qp['category'] ? String(qp['category']).split(',').filter(Boolean) : [];
       this.loadProducts();
     });
   }
@@ -61,10 +61,14 @@ export class ProductsComponent implements OnInit {
   private loadProducts(): void {
     this.loading = true;
     this.error = null;
+    const hasFilter = this.selectedCategoryIds.length > 0;
+
     this.productsService
       .getPaged({
-        pageSize: this.pageSize,
-        pageNumber: this.pageNumber,
+        // When filtering by category, fetch all products so client-side filter
+        // covers every page — not just the current 12-item slice.
+        pageSize: hasFilter ? 500 : this.pageSize,
+        pageNumber: hasFilter ? 1 : this.pageNumber,
         search: this.search || undefined,
       })
       .subscribe({
@@ -72,11 +76,23 @@ export class ProductsComponent implements OnInit {
           this.loading = false;
           if (res.statusCode === 200 && res.data) {
             const data = res.data;
-            this.products = (data.items ?? []).map((p) => this.normalizeProductItem(p));
-            this.totalCount = data.totalRecords ?? data.totalCount ?? this.products.length;
-            this.pageNumber = data.pageNumber ?? this.pageNumber;
-            this.pageSize = data.pageSize ?? this.pageSize;
-            this.applyCategoryFilter();
+            let items = (data.items ?? []).map((p) => this.normalizeProductItem(p));
+
+            if (hasFilter) {
+              items = items.filter((p) => {
+                const id = p.categoryId ?? p.categoryResponses?.[0]?.id ?? p.category?.id;
+                return id && this.selectedCategoryIds.includes(String(id));
+              });
+              this.totalCount = items.length;
+              // Client-side pagination over filtered results
+              const start = (this.pageNumber - 1) * this.pageSize;
+              this.products = items.slice(start, start + this.pageSize);
+            } else {
+              this.products = items;
+              this.totalCount = data.totalRecords ?? data.totalCount ?? items.length;
+              this.pageNumber = data.pageNumber ?? this.pageNumber;
+              this.pageSize = data.pageSize ?? this.pageSize;
+            }
           }
         },
         error: (err) => {
@@ -99,15 +115,6 @@ export class ProductsComponent implements OnInit {
     };
   }
 
-  private applyCategoryFilter(): void {
-    if (this.selectedCategoryIds.length === 0) return;
-    this.products = this.products.filter((p) => {
-      const id = p.categoryId ?? p.categoryResponses?.[0]?.id ?? p.category?.id;
-      return id && this.selectedCategoryIds.includes(id);
-    });
-    this.totalCount = this.products.length;
-  }
-
   onSearchChange(value: string): void {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -121,7 +128,7 @@ export class ProductsComponent implements OnInit {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        category: ids.length ? ids[0] : null,
+        category: ids.length ? ids.join(',') : null,
         page: 1,
       },
       queryParamsHandling: 'merge',

@@ -10,7 +10,8 @@ const USERS_URL = `${BASE_URL}/Users`;
 /** Paginated users response (GET /users). */
 export interface UsersPageResponse {
   items: UserResponseDto[];
-  totalCount: number;
+  totalCount?: number;
+  totalRecords?: number;
   pageNumber: number;
   pageSize: number;
 }

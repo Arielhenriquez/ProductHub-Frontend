@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { CategoriesService } from '../../../core';
 import type { Category, CategoryDto } from '../../../types';
 import {
@@ -10,6 +11,7 @@ import {
   AdminTableShellComponent,
   AdminRowActionsComponent,
 } from '../../../shared/components/admin';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-admin-categories',
@@ -22,6 +24,7 @@ import {
     AdminToolbarComponent,
     AdminTableShellComponent,
     AdminRowActionsComponent,
+    ModalComponent,
   ],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
@@ -113,9 +116,23 @@ export class AdminCategoriesComponent implements OnInit {
   }
 
   deleteCategory(c: Category): void {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta categoría?')) return;
-    this.categoriesService.delete(c.id).subscribe({
-      next: () => (this.categories = this.categories.filter((x) => x.id !== c.id)),
+    Swal.fire({
+      title: '¿Eliminar categoría?',
+      text: `"${c.name}" será eliminada permanentemente.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      this.categoriesService.delete(c.id).subscribe({
+        next: () => {
+          this.categories = this.categories.filter((x) => x.id !== c.id);
+          Swal.fire({ title: 'Eliminada', text: 'La categoría fue eliminada.', icon: 'success', timer: 1800, showConfirmButton: false });
+        },
+      });
     });
   }
 }
