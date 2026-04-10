@@ -7,7 +7,7 @@ Angular 19 e-commerce SPA with an admin panel, deployed on **Azure Static Web Ap
 - **Repo / branch:** https://github.com/Arielhenriquez/ProductHub-Frontend/tree/init-ecommerce
 
 **Backend**
-- **API:** https://producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io
+- **API:**  https://producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io/swagger/index.html
 - **Repo:** https://github.com/Arielhenriquez/ProductHub
 
 ---
