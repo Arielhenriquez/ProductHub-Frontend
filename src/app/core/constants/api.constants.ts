@@ -1,10 +1,19 @@
 /**
  * ProductHub API configuration (ASP.NET Core REST API, JWT).
  * Token and user are stored in localStorage.
+ *
+ * Set useLocalApi to true for local development, false for production.
  */
-export const BASE_URL = 'https://producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io/api';
+const useLocalApi = false;
+
+const localApiUrl = 'https://localhost:7133/api';
+const productionApiUrl = 'https://producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io/api';
+
+export const BASE_URL = useLocalApi ? localApiUrl : productionApiUrl;
 
 export const API_CONFIG = {
+  localApiUrl,
+  productionApiUrl,
   get BASE_URL(): string {
     return BASE_URL;
   },

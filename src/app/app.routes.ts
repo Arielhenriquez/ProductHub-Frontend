@@ -17,14 +17,14 @@ import { guestGuard } from './core/guards/guest.guard';
 import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [authGuard] },
+  { path: '', component: HomeComponent },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [guestGuard] },
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [guestGuard] },
   { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
-  { path: 'products', component: ProductsComponent, canActivate: [authGuard] },
-  { path: 'products/:id', component: ProductDetailComponent, canActivate: [authGuard] },
+  { path: 'products', component: ProductsComponent },
+  { path: 'products/:id', component: ProductDetailComponent },
   { path: 'forbidden', component: ForbiddenComponent },
   { path: 'admin/login', redirectTo: '/login', pathMatch: 'full' },
   { path: 'admin/forgot-password', redirectTo: '/forgot-password', pathMatch: 'full' },
