@@ -11,10 +11,13 @@ export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 401) {
+      if (err.status === 401 && req.headers.has('Authorization')) {
         localStorage.removeItem(AUTH_STORAGE_KEY);
         localStorage.removeItem(USER_STORAGE_KEY);
         router.navigate(['/login']);
+      }
+      if (err.status === 403) {
+        router.navigate(['/forbidden']);
       }
       return throwError(() => err);
     })
