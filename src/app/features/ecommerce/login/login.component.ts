@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core';
 
 @Component({
@@ -14,6 +14,7 @@ import { AuthService } from '../../../core';
 export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   showPassword = false;
   isLoading = false;
@@ -42,7 +43,8 @@ export class LoginComponent {
       next: (result) => {
         this.isLoading = false;
         if (result.success) {
-          this.auth.navigateAfterLogin();
+          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+          returnUrl ? this.router.navigateByUrl(returnUrl) : this.auth.navigateAfterLogin();
         } else {
           this.error = this.toSpanish(result.error ?? '');
           this.errors = (result.errors ?? []).map((e) => this.toSpanish(e));
