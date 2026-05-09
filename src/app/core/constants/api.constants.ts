@@ -21,7 +21,7 @@ export const API_CONFIG = {
 
 export const AUTH_STORAGE_KEY = 'producthub_accessToken';
 export const USER_STORAGE_KEY = 'producthub_user';
-export const SELLER_WHATSAPP = '+18094367341';
+export const SELLER_WHATSAPP = '18094367341';
 
 /** Parse 400 error body: "msg1 | msg2 | msg3" → ["msg1","msg2","msg3"] */
 export function parseValidationErrors(body: { error?: string } | null): string[] {
