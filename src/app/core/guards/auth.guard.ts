@@ -25,19 +25,19 @@ function isTokenValid(token: string): boolean {
 /**
  * ProtectedRoute: no token or expired JWT → clear storage and redirect to /login.
  */
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);
   const auth = inject(AuthService);
   const token = localStorage.getItem(AUTH_STORAGE_KEY);
 
   if (!token) {
-    router.navigate(['/login']);
+    router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
     return false;
   }
 
   if (!isTokenValid(token)) {
     auth.clearSession();
-    router.navigate(['/login'], { queryParams: { expired: 'true' } });
+    router.navigate(['/login'], { queryParams: { expired: 'true', returnUrl: state.url } });
     return false;
   }
 

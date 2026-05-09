@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StoreHeaderComponent } from '../../../components/store-header/store-header.component';
 import { StoreFooterComponent } from '../../../components/store-footer/store-footer.component';
 import { ProductsService } from '../../../core';
+import { SELLER_WHATSAPP } from '../../../core/constants/api.constants';
 import type { Product } from '../../../types';
 
 function formatPrice(price?: number | null): string {
@@ -30,7 +31,7 @@ export class ProductDetailComponent implements OnInit {
   error: string | null = null;
 
   readonly formatPrice = formatPrice;
-  readonly whatsappNumber = '1234567890';
+  readonly whatsappNumber = SELLER_WHATSAPP;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -90,7 +91,7 @@ export class ProductDetailComponent implements OnInit {
   handleWhatsAppContact(): void {
     if (!this.product) return;
     const message = encodeURIComponent(
-      `Hola! Estoy interesado en: ${this.product.name} - Precio: ${this.formatPrice(this.product.price)}`
+      `Hi, I'm interested in this product: ${this.product.name}. Is it still available?`
     );
     window.open(`https://wa.me/${this.whatsappNumber}?text=${message}`, '_blank');
   }
