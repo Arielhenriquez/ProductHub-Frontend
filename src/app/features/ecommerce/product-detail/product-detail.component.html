@@ -56,9 +56,13 @@
               <p class="product-detail__stock">Stock: {{ product.quantityInStock }}</p>
             }
             <div class="product-detail__actions">
-              <button type="button" class="btn btn--whatsapp" (click)="handleWhatsAppContact()">
-                Contactar por WhatsApp
-              </button>
+              @if (product.isActive && product.quantityInStock > 0) {
+                <button type="button" class="btn btn--whatsapp" (click)="handleWhatsAppContact()">
+                  Contactar por WhatsApp
+                </button>
+              } @else {
+                <span class="product-detail__unavailable">No disponible</span>
+              }
               <button type="button" class="btn btn--icon" (click)="toggleFavorite()">
                 {{ isFavorite ? '❤️' : '🤍' }}
               </button>

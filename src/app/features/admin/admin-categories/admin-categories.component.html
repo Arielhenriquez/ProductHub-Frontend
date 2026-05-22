@@ -77,13 +77,14 @@
     >
       <form (ngSubmit)="submit()" class="modal-form">
         <div class="modal-field">
-          <label class="modal-field__label" for="cat-name">Nombre *</label>
+          <label class="modal-field__label" for="cat-name">Nombre <span class="required-mark">*</span></label>
           <input id="cat-name" type="text" [(ngModel)]="form.name" name="name" required placeholder="Ej: Electrónica" class="modal-field__input" />
         </div>
         <div class="modal-field">
           <label class="modal-field__label" for="cat-desc">Descripción</label>
           <textarea id="cat-desc" [(ngModel)]="form.description" name="description" rows="3" placeholder="Breve descripción (opcional)" class="modal-field__input modal-field__input--textarea"></textarea>
         </div>
+        <p class="form-hint">* Campos requeridos</p>
         <div class="modal-footer" data-modal-footer>
           <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
           <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">

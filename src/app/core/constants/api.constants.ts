@@ -6,7 +6,7 @@
  */
 const useLocalApi = false;
 
-const localApiUrl = 'https://localhost:7133/api';
+const localApiUrl = 'https://localhost:5150/api';
 const productionApiUrl = 'https://producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io/api';
 
 export const BASE_URL = useLocalApi ? localApiUrl : productionApiUrl;
