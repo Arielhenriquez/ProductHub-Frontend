@@ -101,7 +101,7 @@
 
         <div class="modal-form__row">
           <div class="modal-field">
-            <label class="modal-field__label" for="edit-firstName">Nombre *</label>
+            <label class="modal-field__label" for="edit-firstName">Nombre <span class="required-mark">*</span></label>
             <input id="edit-firstName" type="text" [(ngModel)]="editForm.firstName" name="firstName"
               required maxlength="100" placeholder="Nombre" class="modal-field__input"
               [class.modal-field__input--error]="editFieldErrors['firstName']" />
@@ -117,7 +117,7 @@
         </div>
 
         <div class="modal-field">
-          <label class="modal-field__label" for="edit-email">Email *</label>
+          <label class="modal-field__label" for="edit-email">Email <span class="required-mark">*</span></label>
           <input id="edit-email" type="email" [(ngModel)]="editForm.email" name="email"
             required maxlength="200" placeholder="correo@ejemplo.com" class="modal-field__input"
             [class.modal-field__input--error]="editFieldErrors['email']" />
@@ -145,6 +145,7 @@
           </label>
         </div>
 
+        <p class="form-hint">* Campos requeridos</p>
         <div class="modal-footer" data-modal-footer>
           <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()">Cancelar</button>
           <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving">

@@ -3,7 +3,7 @@
 Angular 19 e-commerce SPA with an admin panel, deployed on **Azure Static Web Apps** and connected to a REST API running on **Azure Container Apps**.
 
 **Frontend**
-- **Live app:** https://lemon-ground-02ebc910f.6.azurestaticapps.net
+- **Live app:** https://www.producthub.cv
 - **Repo / branch:** https://github.com/Arielhenriquez/ProductHub-Frontend/tree/init-ecommerce
 
 **Backend**
@@ -31,8 +31,9 @@ Angular 19 e-commerce SPA with an admin panel, deployed on **Azure Static Web Ap
 
 | Resource | Type | Details |
 |---|---|---|
-| **Azure Static Web Apps** | Frontend host | `lemon-ground-02ebc910f.6.azurestaticapps.net` — serves the built Angular app |
+| **Azure Static Web Apps** | Frontend host | Custom domain: `www.producthub.cv` · Azure URL: `lemon-ground-02ebc910f.6.azurestaticapps.net` — serves the built Angular app |
 | **Azure Container Apps** | Backend API | `producthub-api.wittysea-8d0d5478.eastus.azurecontainerapps.io` (East US) — ASP.NET Core REST API with JWT · [repo](https://github.com/Arielhenriquez/ProductHub) |
+| **cron-job.org** | Keep-alive | Pings `GET /api/products?pageNumber=1&pageSize=1` every 5 min to prevent Azure Container Apps cold starts |
 
 ---
 

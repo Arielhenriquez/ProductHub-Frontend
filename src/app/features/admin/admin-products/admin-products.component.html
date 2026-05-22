@@ -102,7 +102,7 @@
       <form (ngSubmit)="submit()" class="modal-form">
 
         <div class="modal-field">
-          <label class="modal-field__label" for="product-name">Nombre del producto *</label>
+          <label class="modal-field__label" for="product-name">Nombre del producto <span class="required-mark">*</span></label>
           <input id="product-name" type="text" [(ngModel)]="form.name" name="name" required maxlength="200" placeholder="Ej: Audífonos Bluetooth" class="modal-field__input" />
         </div>
 
@@ -118,7 +118,7 @@
             <span class="modal-field__hint">Dejar vacío si es a negociar</span>
           </div>
           <div class="modal-field">
-            <label class="modal-field__label" for="product-cat">Categoría *</label>
+            <label class="modal-field__label" for="product-cat">Categoría <span class="required-mark">*</span></label>
             <select id="product-cat" [(ngModel)]="form.categoryId" name="categoryId" required class="modal-field__input modal-field__input--select">
               <option value="">Seleccionar categoría</option>
               @for (cat of categories; track cat.id) {
@@ -156,60 +156,59 @@
               </div>
             </label>
             @if (pendingFiles.length) {
-              <div class="admin-image-previews">
+              <div class="admin-image-grid">
                 @for (f of pendingFiles; track f.name + $index; let i = $index) {
-                  <div class="admin-image-preview">
-                    <img [src]="pendingPreviewUrls[i]" [alt]="f.name" />
-                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingFile(i)" title="Quitar">×</button>
-                  </div>
-                }
-              </div>
-            }
-          } @else {
-            @if (productDetail?.images?.length) {
-              <div class="admin-image-previews">
-                @for (img of productDetail!.images; track img.id) {
-                  <div class="admin-image-preview">
-                    <img [src]="img.url" [alt]="'Imagen ' + img.id" />
-                    <div class="admin-image-preview__actions">
-                      @if (img.isMain) {
-                        <span class="admin-image-preview__badge">Principal</span>
-                      } @else {
-                        <button type="button" class="admin-btn admin-btn--outline admin-btn--sm" (click)="setMainImage(img.id)">Hacer principal</button>
-                      }
-                      <button type="button" class="admin-btn admin-btn--icon admin-btn--danger" (click)="deleteImage(img.id)" title="Eliminar">🗑</button>
+                  <div class="admin-image-card">
+                    <div class="admin-image-card__wrap">
+                      <img [src]="pendingPreviewUrls[i]" [alt]="f.name" />
+                      <button type="button" class="admin-image-card__delete" (click)="removePendingFile(i)" title="Quitar">×</button>
                     </div>
                   </div>
                 }
               </div>
             }
-            @if ((productDetail?.images?.length ?? 0) + pendingNewFiles.length < maxImageFiles) {
-              <label class="file-upload-area">
-                <input type="file" multiple accept="image/*" (change)="onNewFilesSelected($event)" />
-                <div class="file-upload-area__inner">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <span>Añadir más imágenes</span>
-                  <span class="file-upload-area__hint">Máx. {{ maxImageFiles }} en total · 5 MB cada una</span>
-                </div>
-              </label>
-            }
-            @if (pendingNewFiles.length) {
-              <div class="admin-image-previews">
-                @for (f of pendingNewFiles; track f.name + $index; let i = $index) {
-                  <div class="admin-image-preview">
-                    <img [src]="pendingNewPreviewUrls[i]" [alt]="f.name" />
-                    <span class="admin-image-preview__badge admin-image-preview__badge--new">Nueva</span>
-                    <button type="button" class="admin-btn admin-btn--icon admin-btn--danger admin-image-preview__remove" (click)="removePendingNewFile(i)" title="Quitar">×</button>
+          } @else {
+            <div class="admin-image-grid">
+              @if (productDetail?.images?.length) {
+                @for (img of productDetail!.images; track img.id) {
+                  <div class="admin-image-card">
+                    <div class="admin-image-card__wrap">
+                      <img [src]="img.url" [alt]="'Imagen ' + img.id" />
+                      @if (img.isMain) {
+                        <span class="admin-image-card__badge">Principal</span>
+                      }
+                      <button type="button" class="admin-image-card__delete" (click)="deleteImage(img.id)" title="Eliminar">×</button>
+                    </div>
+                    @if (!img.isMain) {
+                      <button type="button" class="admin-btn admin-btn--outline admin-btn--sm admin-image-card__set-main" (click)="setMainImage(img.id)">Hacer principal</button>
+                    }
                   </div>
                 }
-              </div>
-            }
+              }
+              @for (f of pendingNewFiles; track f.name + $index; let i = $index) {
+                <div class="admin-image-card">
+                  <div class="admin-image-card__wrap">
+                    <img [src]="pendingNewPreviewUrls[i]" [alt]="f.name" />
+                    <span class="admin-image-card__badge admin-image-card__badge--new">Nueva</span>
+                    <button type="button" class="admin-image-card__delete" (click)="removePendingNewFile(i)" title="Quitar">×</button>
+                  </div>
+                </div>
+              }
+              @if ((productDetail?.images?.length ?? 0) + pendingNewFiles.length < maxImageFiles) {
+                <label class="admin-image-card admin-image-card--upload">
+                  <input type="file" multiple accept="image/*" (change)="onNewFilesSelected($event)" />
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Añadir</span>
+                </label>
+              }
+            </div>
           }
           @if (imageError) {
             <p class="modal-field__hint modal-field__hint--error">{{ imageError }}</p>
           }
         </div>
 
+        <p class="form-hint">* Campos requeridos</p>
         <div class="modal-footer" data-modal-footer>
           <button type="button" class="admin-btn admin-btn--outline" (click)="closeDialog()" [disabled]="saving || uploadingImages">Cancelar</button>
           <button type="submit" class="admin-btn admin-btn--primary" [disabled]="saving || uploadingImages">

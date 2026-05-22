@@ -38,11 +38,11 @@
         }
         <form (ngSubmit)="handleSubmit()" class="login-form">
           <div class="login-form__group">
-            <label for="email">Email</label>
+            <label for="email">Email <span class="required-mark">*</span></label>
             <input id="email" type="email" placeholder="tu@ejemplo.com" required [(ngModel)]="formData.email" name="email" />
           </div>
           <div class="login-form__group">
-            <label for="password">Contraseña</label>
+            <label for="password">Contraseña <span class="required-mark">*</span></label>
             <div class="login-form__input-wrap">
               <input id="password" [type]="showPassword ? 'text' : 'password'" placeholder="Tu contraseña" required [(ngModel)]="formData.password" name="password" />
               <button type="button" class="login-form__toggle" (click)="showPassword = !showPassword" aria-label="Ver contraseña">{{ showPassword ? '🙈' : '👁' }}</button>
@@ -53,6 +53,7 @@
             <input type="checkbox" [(ngModel)]="formData.rememberMe" name="rememberMe" />
             <span>Recordarme 30 días</span>
           </label>
+          <p class="form-hint">* Campos requeridos</p>
           <button type="submit" class="login-form__submit" [disabled]="isLoading">
             {{ isLoading ? 'Entrando...' : 'Iniciar sesión' }}
           </button>
